@@ -47,19 +47,19 @@ short getUserChoice(){
 }
 
 string askUserForPath(){
-	bool isPathOrDir = true;
+	bool isPathOrDir = false;
 	string path = "";
 	do{
-		printf("\n Please enter a specific path (to a directory or a file) to consider (Enter C: to analyze the whole disk) :\n");
+		printf("\n Please enter a specific path (to a directory or a file) to consider (Enter C:/ to analyze the whole disk) :\n");
 		cin.clear();
-//		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		//cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		cin >> path;
-		/*struct stat s;
+		struct stat s;
 		if(stat(path.c_str(), &s) == 0){
 			if(s.st_mode & S_IFDIR || s.st_mode & S_IFREG){
 				isPathOrDir = true;
 			}
-		}*/
+		}
 	} while (!isPathOrDir);
 	return path;
 }
@@ -77,7 +77,7 @@ void listDirectory(string path){
    copy(path.begin(), path.end(), param);
 
    StringCchCopy(szDir, MAX_PATH, param);
-   StringCchCat(szDir, MAX_PATH, TEXT("\\*"));
+   StringCchCat(szDir, MAX_PATH, TEXT("/*"));
 
    hFind = FindFirstFile(szDir, &ffd);
    
@@ -85,17 +85,25 @@ void listDirectory(string path){
 
    do
    {
+	  string dir = path;
+	  wstring wfilename(ffd.cFileName);
+	  string filename(wfilename.begin(), wfilename.end());
+	  if(path.at(path.size()-1) == '/' ||  path.at(path.size()-1) == '\\')
+		dir.append(filename);
+	  else
+		dir.append("/").append(filename);
+
 	   // IT'S A DIRECTORY
       if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
       {
-         _tprintf(TEXT("  %s   <DIR>\n"), ffd.cFileName);
+		  // Recursive call to put her
+          printf("  %s   <DIR>\n", dir.c_str());
       }
 	  // IT'S A FILE
       else
       {
-         filesize.LowPart = ffd.nFileSizeLow;
-         filesize.HighPart = ffd.nFileSizeHigh;
-         _tprintf(TEXT("  %s   %ld bytes\n"), ffd.cFileName, filesize.QuadPart);
+		 // File analysis to put here
+         printf("  %s   <FILE>\n", dir.c_str());
       }
    }
    while (FindNextFile(hFind, &ffd) != 0);
