@@ -1,9 +1,3 @@
-// Semaphore_test.cpp : définit le point d'entrée pour l'application console.
-//
-
-// !!! pas oublier de free structures apres malloc
-// pas oublier de free les handle apres malloc
-
 #include "stdafx.h"
 #include <windows.h>
 #include <fstream>
@@ -20,13 +14,13 @@ HANDLE THREAD_COUNT_SEMAPHORE;
 
 // Represents the data allocated to a thread for file-analysis
 struct THREAD_DATA_ {
-	DWORD thread_id;
+	int thread_id;                                   // -2 if not related to a thread, -1 if related thread is waiting for CloseHandle
 	HANDLE thread_handle; 
 	char thread_buffer[1000000];                     // buffer for file reading
 	char file_path[MAX_PATH];
     int file_start;                                  // when only a part of the file must be analyzed
     int file_end;                                    // idem
-} THREAD_DATA_DEFAULT= {-1, NULL, NULL, NULL, 0, 0};
+} THREAD_DATA_DEFAULT= {-1, NULL, 0, NULL, NULL, 0, 0};
 typedef struct THREAD_DATA_ THREAD_DATA;
 
 /**
@@ -143,7 +137,7 @@ int main( void )
 		*(td_[i])= THREAD_DATA_DEFAULT;
 	}
 	
-    for( i=0; i < 9; i++ ){
+    for( i=0; i < 12; i++ ){
 		// Wait if MAX_THREAD_COUNT are already running
 		WaitForSingleObject(THREAD_COUNT_SEMAPHORE,   // handle to semaphore
 							INFINITE);                // zero-second time-out interval
@@ -153,6 +147,8 @@ int main( void )
 		if(td_[j]->thread_handle!=NULL){
 			CloseHandle(td_[j]->thread_handle);
 		}
+		*(td_[j])= THREAD_DATA_DEFAULT;
+		td_[j]->thread_id= j;
 
 		// The following switch (along the above for-loop) simulates the hard-disk browsing function; cases 0-4: must not be recognized, cases 5-9: must be recognized
 		switch(i){
@@ -185,6 +181,15 @@ int main( void )
 				td_[j]->file_start= 0;
 				td_[j]->file_end= 768;
 				break;
+			case 9:
+				strcpy_s(td_[j]->file_path, "C:/Documents and Settings/Administrateur/Bureau/test.txt.lockedbis");
+				break;
+			case 10:
+				strcpy_s(td_[j]->file_path, "C:/Documents and Settings/Administrateur/Bureau/test.txt.lockedbis");
+				break;
+			case 11:
+				strcpy_s(td_[j]->file_path, "C:/Documents and Settings/Administrateur/Bureau/test.txt.lockedbis");
+				break;
 		}
 
         td_[j]->thread_handle= CreateThread(NULL,                                              // default security attributes
@@ -192,28 +197,32 @@ int main( void )
                      (LPTHREAD_START_ROUTINE) chi_square_byte_analysis, // start routine
                      td_[j],                                            // no thread function arguments
                      0,                                                 // default creation flags
-                     &(td_[j]->thread_id));                             // receive thread identifier
+                     NULL);                             // receive thread identifier
     }
-	// Free allocated memory
+	// Close handles
 	i= 1;
 	while(i!=0){
 		i= 0;
+		// i: count number of remaining threads
 		for(j= 0; j<MAX_THREAD_COUNT; j++){
-			if(td_[j]->thread_id!=-1)
+			if(td_[j]->thread_id>=0)
 				i++;
 		}
-		if(i==1)
-			i= 0;
+		// ii: consume 1 semaphore unit (include the case when more threads were created compared to the number of targetted files)
 		WaitForSingleObject(THREAD_COUNT_SEMAPHORE,   // handle to semaphore
 							INFINITE);                // zero-second time-out interval
 		j= 0;
-		while(td_[j]->thread_id!=-1 || td_[j]->thread_handle==NULL)
+		// iii: if the consumed semaphore unit was related to a terminated thread, find it and close the handle
+		while(j<MAX_THREAD_COUNT && (td_[j]->thread_id!=-1 || td_[j]->thread_handle==NULL))
 			j++;
-		if(td_[j]->thread_handle!=NULL){
+		if(j<MAX_THREAD_COUNT && td_[j]->thread_handle!=NULL){
 			CloseHandle(td_[j]->thread_handle);
 			td_[j]->thread_handle= NULL;
+			td_[j]->thread_id= -2;
+			i--;
 		}
 	}
+	// Free shared memory
 	for(j= 0; j<MAX_THREAD_COUNT; j++)
 		delete td_[j];
 	CloseHandle(WRITE_MUTEX);
