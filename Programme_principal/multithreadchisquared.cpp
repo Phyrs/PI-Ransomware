@@ -5,9 +5,7 @@
 // pas oublier de free les handle apres malloc
 
 #include "multithreadchisquared.h"
-
-double p_value= 0.05;
-
+#include "Analyzer_Chi_Squared.h"
 
 HANDLE WRITE_MUTEX;             // to ensure that write operations on log output are safe
 HANDLE THREAD_COUNT_SEMAPHORE;
@@ -16,7 +14,7 @@ HANDLE THREAD_COUNT_SEMAPHORE;
 struct THREAD_DATA_ {
 	int thread_id;                                   // -2 if not related to a thread, -1 if related thread is waiting for CloseHandle
 	HANDLE thread_handle; 
-	char thread_buffer[1000000];                     // buffer for file reading
+	char thread_buffer[BUFFER_SIZE];                     // buffer for file reading
 	char file_path[MAX_PATH];
     int file_start;                                  // when only a part of the file must be analyzed
     int file_end;                                    // idem
@@ -40,80 +38,48 @@ std::ifstream::pos_type filesize(const char* filename)
 }
 
 /**
- * Tells if given data sample can be related to specified multinomial distribution, within given error margin
- * @param sample_sd {double}: standard deviation of sample
- * @param sample_size {uint}: size of sample
- * @param p_value {double}: error margin
- * @return Boolean: true if there is concordance
- */
-int chi_squared_test(double sample_sd, unsigned sample_size, double p_value){
-	using boost::math::chi_squared;
-	using boost::math::quantile;
-	using boost::math::complement;
-	using boost::math::cdf;
-
-	// Experimental model: each byte's possible value has the same probability of apparition (1/256)
-	double model_sd= sqrt( pow((double)256, 2)/12); // model's standard deviation
-
-	double t_stat = (sample_size - 1) * (sample_sd / model_sd) * (sample_sd / model_sd);  // test statistic
-
-	chi_squared dist(sample_size - 1); // chi-squared distribution
-	double ucv2 = quantile(complement(dist, p_value/2)); // upper quantile
-	double lcv2 = quantile(dist, p_value/2); // lower quantile
-   
-	// Null-Hypothesis: (are the file's bytes following a multinomial distribution with a mean of 127.5 ?) 
-	if(t_stat < lcv2 || t_stat > ucv2)
-		return 0;
-	return 1;
-}
-
-/**
  * Detects generic encryption on given file (i.e. the file's bytes values have an homogeneous repartition)
  * @param file_path {char*}
  * @param start {int}: starting index (optionnal)
  * @param end {int}: last index (optionnal)
  */
-DWORD WINAPI chi_square_byte_analysis( LPVOID file_data ){
+DWORD WINAPI file_analysis( LPVOID file_data ){
     THREAD_DATA* td= ((THREAD_DATA*)file_data);
     
-	int i, bytes_count= 0;
-	double bytes_sum= 0, bytes_square_sum= 0;
+	// TODO: init all analyzers
+	analyzer_init(td->file_path);
+	int process= 0, bytes_count= 0;
 
 	if(td->file_end-td->file_start<=0){
 		td->file_start= 0;
 		td->file_end= (int)filesize(td->file_path);
 	}
-	// i - Open the file and process its bytes
+	// Open the file and process its bytes
 	ifstream file(td->file_path, ios::binary);
+	file.clear();
 	do{
-		file.read(td->thread_buffer, sizeof(td->thread_buffer));
-		int test = file.gcount();
-		for(i= 0; i<file.gcount(); i++){
-			if(bytes_count>= td->file_start && bytes_count<td->file_end){
-				bytes_sum+= td->thread_buffer[i] & 0xff;
-				bytes_square_sum+= pow(((double)(td->thread_buffer[i] & 0xff)), 2);
-			}
-			bytes_count++;
-			if(bytes_count>=td->file_end)
-				break;
+		process= analyzer_in_range(file.tellg()); // TODO: for all analyzers
+		if(process){
+			file.read(td->thread_buffer, sizeof(td->thread_buffer));
+			if(analyzer_in_range(file.tellg()))
+				analyzer_process(td->thread_buffer, file.gcount());
+		}else{
+			file.seekg(BUFFER_SIZE, file.cur);
 		}
-		if(bytes_count>=td->file_end)
-			break;
 	}while(!file.eof());
 	file.close();
-	// ii - Chi-Square test
-	double bytes_sd= sqrt( bytes_square_sum/(bytes_count-td->file_start) - pow(((double)bytes_sum/(bytes_count-td->file_start)), 2) ); // standard deviation of file's bytes
-	int file_status= chi_squared_test(bytes_sd, bytes_count-td->file_start, p_value);
+	// TODO: for all analyzers
+	analyzer_compute();
 
 	// Wait for the write operation to be secure
 	WaitForSingleObject( 
             WRITE_MUTEX,    // handle to mutex
             INFINITE);      // no time-out interval
 
-	// TODO: replace by write operation in log file
-	printf("%s: %d\n", td->file_path, file_status);
 
-	ReleaseMutex(WRITE_MUTEX);
+	analyzer_result();  // TODO: for all analyzers
+
+	ReleaseMutex(WRITE_MUTEX); 
 
 	td->thread_id= -1;
 
@@ -189,7 +155,7 @@ void launch_thread(const char *file_path){
 
         td_[j]->thread_handle= CreateThread(NULL,                                              // default security attributes
                      0,                                                 // default stack size
-                     (LPTHREAD_START_ROUTINE) chi_square_byte_analysis, // start routine
+                     (LPTHREAD_START_ROUTINE) file_analysis, // start routine
                      td_[j],                                            // no thread function arguments
                      0,                                                 // default creation flags
                      NULL);  

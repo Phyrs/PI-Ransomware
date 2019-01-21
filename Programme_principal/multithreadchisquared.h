@@ -11,9 +11,9 @@
 #include "stdafx.h"
 #include <windows.h>
 #include <fstream>
-#include <boost/math/distributions/chi_squared.hpp>
 
 #define MAX_THREAD_COUNT 1
+#define BUFFER_SIZE 1000000
 
 using namespace std;
 

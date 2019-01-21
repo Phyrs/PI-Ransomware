@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <strsafe.h>
 #include "multithreadchisquared.h"
+#include "Vipasana_Signature.h"
 #pragma comment(lib, "User32.lib")
 
 using namespace std;
