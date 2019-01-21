@@ -14,7 +14,7 @@ HANDLE THREAD_COUNT_SEMAPHORE;
 
 // Represents the data allocated to a thread for file-analysis
 struct THREAD_DATA_ {
-	DWORD thread_id;
+	int thread_id;                                   // -2 if not related to a thread, -1 if related thread is waiting for CloseHandle
 	HANDLE thread_handle; 
 	char thread_buffer[1000000];                     // buffer for file reading
 	char file_path[MAX_PATH];
@@ -143,26 +143,29 @@ void init_threading(){
 }
 
 void end_threading(){
-	// Free allocated memory
+	// Close handles
 	int i= 1, j = 0;
 	while(i!=0){
 		i= 0;
+		// i: count number of remaining threads
 		for(j= 0; j<MAX_THREAD_COUNT; j++){
-			if(td_[j]->thread_id!=-1)
+			if(td_[j]->thread_id>=0)
 				i++;
 		}
-		if(i==1)
-			i= 0;
+		// ii: consume 1 semaphore unit (include the case when we created more threads than files to read)
 		WaitForSingleObject(THREAD_COUNT_SEMAPHORE,   // handle to semaphore
 							INFINITE);                // zero-second time-out interval
 		j= 0;
-		while(td_[j]->thread_id!=-1 || td_[j]->thread_handle==NULL)
+		while(j<MAX_THREAD_COUNT && (td_[j]->thread_id!=-1 || td_[j]->thread_handle==NULL))
 			j++;
-		if(td_[j]->thread_handle!=NULL){
+		if(j<MAX_THREAD_COUNT && td_[j]->thread_handle!=NULL){
 			CloseHandle(td_[j]->thread_handle);
 			td_[j]->thread_handle= NULL;
+			td_[j]->thread_id= -2;
+			i--;
 		}
 	}
+	// Free shared memory
 	for(j= 0; j<MAX_THREAD_COUNT; j++)
 		delete td_[j];
 	CloseHandle(WRITE_MUTEX);
@@ -178,8 +181,9 @@ void launch_thread(const char *file_path){
 			j++;
 		if(td_[j]->thread_handle!=NULL){
 			CloseHandle(td_[j]->thread_handle);
-			*(td_[j])= THREAD_DATA_DEFAULT;
 		}
+		*(td_[j])= THREAD_DATA_DEFAULT;
+		td_[j]->thread_id= j;
 
 		strcpy_s(td_[j]->file_path, file_path);
 
@@ -188,5 +192,5 @@ void launch_thread(const char *file_path){
                      (LPTHREAD_START_ROUTINE) chi_square_byte_analysis, // start routine
                      td_[j],                                            // no thread function arguments
                      0,                                                 // default creation flags
-                     &(td_[j]->thread_id));  
+                     NULL);  
 }

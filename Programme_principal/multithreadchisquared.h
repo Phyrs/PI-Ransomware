@@ -13,7 +13,7 @@
 #include <fstream>
 #include <boost/math/distributions/chi_squared.hpp>
 
-#define MAX_THREAD_COUNT 4
+#define MAX_THREAD_COUNT 1
 
 using namespace std;
 
