@@ -35,6 +35,7 @@ THREAD_DATA* td_[MAX_THREAD_COUNT];
 std::ifstream::pos_type filesize(const char* filename)
 {
     std::ifstream selected_file(filename, std::ios::ate | std::ios::binary);
+	long test = selected_file.tellg();
     return selected_file.tellg(); 
 }
 
@@ -86,6 +87,7 @@ DWORD WINAPI chi_square_byte_analysis( LPVOID file_data ){
 	ifstream file(td->file_path, ios::binary);
 	do{
 		file.read(td->thread_buffer, sizeof(td->thread_buffer));
+		int test = file.gcount();
 		for(i= 0; i<file.gcount(); i++){
 			if(bytes_count>= td->file_start && bytes_count<td->file_end){
 				bytes_sum+= td->thread_buffer[i] & 0xff;
@@ -176,6 +178,7 @@ void launch_thread(const char *file_path){
 			j++;
 		if(td_[j]->thread_handle!=NULL){
 			CloseHandle(td_[j]->thread_handle);
+			*(td_[j])= THREAD_DATA_DEFAULT;
 		}
 
 		strcpy_s(td_[j]->file_path, file_path);
