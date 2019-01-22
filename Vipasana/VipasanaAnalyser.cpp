@@ -69,21 +69,23 @@ void VipasanaAnalyser::decipher(string path) const
     long const length1 = (length3 > 768)?768:length3;
 	long const length2 = (length3 > 30000)?30000:length3;
 
-    string const decipheredName = path.substr(0, static_cast<int>(strrchr(path.c_str(), '/')-path.c_str()+1))+name(file);
+    string const decipheredPath = path.substr(0, static_cast<int>(strrchr(path.c_str(), '/')-path.c_str()+1))+name(file);
     file.seekg(0, file.beg);
 
 	// Creating new file
+	char begin[768];
 	ofstream decipheredfile;
-	decipheredfile.open(decipheredName);
+	decipheredfile.open(decipheredPath, ios::binary);
+	decipheredfile.seekp(0, decipheredfile.beg);
 
 	for (long i=0; i<length1 ; i++)
 	{
-		char buff;
-		file.get(buff);
-		buff = reverse_algo(globalKey[i%20], buff, i);
-
-		decipheredfile << buff;
+		file.get(begin[i]);
+		begin[i] = reverse_algo(globalKey[i%20], begin[i], i);
 	}
+
+	regenerateHeader(decipheredfile, decipheredPath, begin, length3);
+	decipheredfile.write(begin, length1);
 
 	for (long i=768; i<length2; i++)
 	{
@@ -103,7 +105,7 @@ void VipasanaAnalyser::decipher(string path) const
 	decipheredfile.close();
 	file.close();
 	
-	cout << "File Deciphered : " << path << endl;
+	cout << "File Deciphered : " << decipheredPath << endl;
 }
 
 long VipasanaAnalyser::pFin(ifstream &file) const

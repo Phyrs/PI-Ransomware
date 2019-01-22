@@ -7,10 +7,11 @@ int _tmain(int argc, _TCHAR* argv[])
 int main(int argc, char* argv[])
 #endif
 {
-    VipasanaAnalyser vipasanaAnalyser("Tests/save/lancement2/5.txt", "Tests/save/lancement2/5_chiffre.cbf");
+    VipasanaAnalyser vipasanaAnalyser("Tests/save/lancement3/5.txt", "Tests/save/lancement3/5_chiffre.cbf");
     vipasanaAnalyser.printGlobalKey();
-    vipasanaAnalyser.decipher("Tests/lancement2/4_chiffre.cbf");
-
+    vipasanaAnalyser.decipher("Tests/lancement3/image_chiffre.cbf");
+    testFichier();
+    
 	return 0;
 }
 
