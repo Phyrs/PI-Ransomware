@@ -1,34 +1,29 @@
 #include "Analyzer_Chi_Squared.h"
 
-double a_bytes_sum, a_bytes_square_sum, a_bytes_count;
-char* a_file_path;
-int a_result;
-double a_p_value= 0.05;
-
 /**
  * Intitialize analyzer variables
  */
-void analyzer_init(char* file_path){
+AnalyzerChiSquared::AnalyzerChiSquared(char* file_path) : Analyzer(file_path) {
 	a_bytes_sum= 0;
 	a_bytes_square_sum= 0;
 	a_bytes_count= 0;
 	a_result= 0;
-	a_file_path= file_path;
+	a_p_value = 0.05;
 }
 
 /**
  * Tells if the buffer currently pointed by the parser is interresing for the signature's calculation
  */
-int analyzer_in_range(int cursor){
-	return 1;
+bool AnalyzerChiSquared::analyzer_in_range(long cursor){
+	return true;
 }
 
 /**
  * Process current file block
  */
-void analyzer_process(char* buffer, int file_count){
+void AnalyzerChiSquared::analyzer_process(char* buffer, int readbytes, long cursor){
 	int i;
-	for(i= 0; i<file_count; i++){
+	for(i= 0; i<readbytes; i++){
 		a_bytes_sum+= buffer[i] & 0xff;
 		a_bytes_square_sum+= pow(((double)(buffer[i] & 0xff)), 2);
 		a_bytes_count++;
@@ -38,7 +33,7 @@ void analyzer_process(char* buffer, int file_count){
 /**
  * Tells if given data sample can be related to specified multinomial distribution, within given error margin
  */
-void analyzer_compute(){
+void AnalyzerChiSquared::analyzer_compute(){
 	using boost::math::chi_squared;
 	using boost::math::quantile;
 	using boost::math::complement;
@@ -66,6 +61,10 @@ void analyzer_compute(){
 /**
  * Print / save in a log file the a_result of the scan
  */
-void analyzer_result(){
-	printf("%s: %d\n", a_file_path, a_result);
+void AnalyzerChiSquared::analyzer_result(){
+	printf(" - All the file's bytes have been ciphered : %s\n", (a_result ? "yes" : "no"));
+}
+
+int AnalyzerChiSquared::get_result(){
+	return a_result;
 }

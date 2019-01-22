@@ -4,8 +4,9 @@
 // !!! pas oublier de free structures apres malloc
 // pas oublier de free les handle apres malloc
 
-#include "multithreadchisquared.h"
+#include "multithreading.h"
 #include "Analyzer_Chi_Squared.h"
+#include "Analyzer_Vipasana.h"
 
 HANDLE WRITE_MUTEX;             // to ensure that write operations on log output are safe
 HANDLE THREAD_COUNT_SEMAPHORE;
@@ -34,7 +35,9 @@ std::ifstream::pos_type filesize(const char* filename)
 {
     std::ifstream selected_file(filename, std::ios::ate | std::ios::binary);
 	long test = selected_file.tellg();
-    return selected_file.tellg(); 
+    std::ifstream::pos_type size = selected_file.tellg(); 
+	selected_file.close();
+	return size;
 }
 
 /**
@@ -47,8 +50,12 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
     THREAD_DATA* td= ((THREAD_DATA*)file_data);
     
 	// TODO: init all analyzers
-	analyzer_init(td->file_path);
-	int process= 0, bytes_count= 0;
+	Analyzer *tabAnalyzers[ANALYZERS_NUMBER];
+	tabAnalyzers[0] = new AnalyzerChiSquared(td->file_path);
+	tabAnalyzers[1] = new AnalyzerVipasana(td->file_path, (int)filesize(td->file_path));
+
+	bool process = false;
+	long cursorpos = 0;
 
 	if(td->file_end-td->file_start<=0){
 		td->file_start= 0;
@@ -58,26 +65,36 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 	ifstream file(td->file_path, ios::binary);
 	file.clear();
 	do{
-		process= analyzer_in_range(file.tellg()); // TODO: for all analyzers
+		cursorpos = file.tellg();
+		for(int j = 0; j < ANALYZERS_NUMBER; j++){
+			process = tabAnalyzers[j]->analyzer_in_range(cursorpos) || process;
+		}
 		if(process){
 			file.read(td->thread_buffer, sizeof(td->thread_buffer));
-			if(analyzer_in_range(file.tellg()))
-				analyzer_process(td->thread_buffer, file.gcount());
+			for(int j = 0; j < ANALYZERS_NUMBER; j++){
+				if(tabAnalyzers[j]->analyzer_in_range(cursorpos))
+					tabAnalyzers[j]->analyzer_process(td->thread_buffer, file.gcount(), cursorpos);
+			}
 		}else{
 			file.seekg(BUFFER_SIZE, file.cur);
 		}
+		process = false;
 	}while(!file.eof());
 	file.close();
-	// TODO: for all analyzers
-	analyzer_compute();
+	
+	for(int j = 0; j < ANALYZERS_NUMBER; j++){
+		tabAnalyzers[j]->analyzer_compute();
+	}
 
 	// Wait for the write operation to be secure
 	WaitForSingleObject( 
             WRITE_MUTEX,    // handle to mutex
             INFINITE);      // no time-out interval
 
-
-	analyzer_result();  // TODO: for all analyzers
+	printf("\nResults for %s : \n", td->file_path);
+	for(int j = 0; j < ANALYZERS_NUMBER; j++){
+		tabAnalyzers[j]->analyzer_result();
+	}
 
 	ReleaseMutex(WRITE_MUTEX); 
 

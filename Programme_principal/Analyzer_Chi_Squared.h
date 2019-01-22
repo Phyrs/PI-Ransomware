@@ -3,30 +3,24 @@
 #pragma once
 
 #include <boost/math/distributions/chi_squared.hpp>
+#include "Analyzer.h"
 
-/**
- * Intitialize analyzer variables
- */
-void analyzer_init(char* file_path);
+class AnalyzerChiSquared : public Analyzer
+{
+	public:
+	AnalyzerChiSquared(char* file_path);
+	virtual bool analyzer_in_range(long cursor);
+	virtual void analyzer_process(char* buffer, int readbytes, long cursor);
+	virtual void analyzer_compute();
+	virtual void analyzer_result();
+	int get_result();
 
-/**
- * Tells if the buffer currently pointed by the parser is interresing for the signature's calculation
- */
-int analyzer_in_range(int cursor);
+	private:
 
-/**
- * Process current file block
- */
-void analyzer_process(char* buffer, int file_count);
+	double a_bytes_sum, a_bytes_square_sum, a_bytes_count;
+	int a_result;
+	double a_p_value;
 
-/**
- * Tells if given data sample can be related to specified multinomial distribution, within given error margin
- */
-void analyzer_compute();
-
-/**
- * Print / save in a log file the result of the scan
- */
-void analyzer_result();
+};
 
 #endif

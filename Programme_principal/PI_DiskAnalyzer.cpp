@@ -15,8 +15,7 @@
 #include <tchar.h> 
 #include <stdio.h>
 #include <strsafe.h>
-#include "multithreadchisquared.h"
-#include "Vipasana_Signature.h"
+#include "multithreading.h"
 #pragma comment(lib, "User32.lib")
 
 using namespace std;
@@ -68,9 +67,7 @@ string askUserForPath(){
 
 void listDirectory(string path){
    WIN32_FIND_DATA ffd;
-   LARGE_INTEGER filesize;
    TCHAR szDir[MAX_PATH];
-   size_t length_of_arg;
    HANDLE hFind = INVALID_HANDLE_VALUE;
    DWORD dwError=0;
 
