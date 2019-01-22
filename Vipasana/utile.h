@@ -12,7 +12,9 @@
 
 using namespace std;
 
+void testFichier();
 ifstream loadFile(char const *path);
+void regenerateHeader(ofstream &file, string path, char begin[768], long length);
 bool loadFileAndLoadBuffer(char const *path, char *dst, int size);
 
 #endif //ETUDE_H
