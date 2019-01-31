@@ -1,5 +1,5 @@
-#ifndef MULTITHREAD_CHISQUARED
-#define MULTITHREAD_CHISQUARED
+#ifndef MULTITHREAD
+#define MULTITHREAD
 
 
 // Semaphore_test.cpp : définit le point d'entrée pour l'application console.
@@ -11,12 +11,16 @@
 #include "stdafx.h"
 #include <windows.h>
 #include <fstream>
+#include <string>
+#include <vector>
 
 #define MAX_THREAD_COUNT 1
 #define BUFFER_SIZE 1000000
 #define ANALYZERS_NUMBER 2
 
 using namespace std;
+
+extern vector<std::string> ciphered_files_path;
 
 /**
  * Returns the size (in bytes) of targetted file

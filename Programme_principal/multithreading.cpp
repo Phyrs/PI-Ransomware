@@ -7,6 +7,8 @@
 #include "multithreading.h"
 #include "Analyzer_Chi_Squared.h"
 #include "Analyzer_Vipasana.h"
+#include <vector>
+#include <string>
 
 HANDLE WRITE_MUTEX;             // to ensure that write operations on log output are safe
 HANDLE THREAD_COUNT_SEMAPHORE;
@@ -22,9 +24,9 @@ struct THREAD_DATA_ {
 } THREAD_DATA_DEFAULT= {-1, NULL, NULL, NULL, 0, 0};
 typedef struct THREAD_DATA_ THREAD_DATA;
 
-
-
 THREAD_DATA* td_[MAX_THREAD_COUNT];
+
+vector<std::string> ciphered_files_path;
 
 /**
  * Returns the size (in bytes) of targetted file
@@ -96,6 +98,17 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 		tabAnalyzers[j]->analyzer_result();
 	}
 
+	for(int j = ANALYZERS_NUMBER-1; j >= 0; j--){
+		if(tabAnalyzers[j]->is_ciphered_by_ransomware()){
+			string name = tabAnalyzers[j]->get_ransomware_name();
+			name.append("|");
+			name.append(td->file_path);
+			name.append("\n");
+
+			ciphered_files_path.push_back(name);
+			break;
+		}
+	}
 	ReleaseMutex(WRITE_MUTEX); 
 
 	td->thread_id= -1;

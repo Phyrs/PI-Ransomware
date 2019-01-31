@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <string>
 #include <windows.h>
 #include <tchar.h> 
@@ -20,6 +21,7 @@
 
 using namespace std;
 
+vector <string> recovery_tools;
 const char *cipheredFileName = "C:/cipheredfiles_list.txt";
 
 void printFirstMenu(){
@@ -65,6 +67,22 @@ string askUserForPath(){
 	return path;
 }
 
+short askUserForRecoveryTool(){
+	short id = -1;
+	do{
+		printf("\n Please select a recovery tool among the following :\n");
+		printf(" 1 - Vipasana Recovery tool (require a plain and a ciphered text)\n");
+		cin.clear();
+		cin >> id;
+		if(cin.fail()){
+			cin.clear();
+			id = 0;
+		}
+		id--;
+	} while (id < 0 || id > recovery_tools.size()-1);
+	return id;
+}
+
 void listDirectory(string path){
    WIN32_FIND_DATA ffd;
    TCHAR szDir[MAX_PATH];
@@ -95,8 +113,8 @@ void listDirectory(string path){
 	   // IT'S A DIRECTORY
       if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
       {
-		  // Recursive call to put her
-          //printf("  %s   <DIR>\n", dir.c_str());
+		  if(filename.compare(".")!=0 && filename.compare("..")!=0)
+			listDirectory(dir.c_str());
       }
 	  // IT'S A FILE
       else
@@ -107,14 +125,68 @@ void listDirectory(string path){
       }
    }
    while (FindNextFile(hFind, &ffd) != 0);
-
-
    FindClose(hFind);
+}
+
+void write_report(){
+
+	ofstream file(cipheredFileName);
+	if(!file.is_open()){
+		printf("Error while writing log...\n");
+		return;
+	}
+
+	for(vector<string>::iterator it = ciphered_files_path.begin() ; it != ciphered_files_path.end() ; ++it){
+		file << *it;
+	}
+	file.close();
+
+	printf("%s generated.\n", cipheredFileName);
+}
+
+void recover_files(short id_tool_selected){
+	ifstream file(cipheredFileName);
+	if(!file.is_open()){
+		printf("Error while opening %s\n", cipheredFileName);
+		return;
+	}
+
+	// Preparing Vipasana Recovery Files
+	if(!string("Vipasana").compare(recovery_tools[id_tool_selected])){
+		string plainpath = "";
+		string cipheredpath = "";
+
+		printf("You have chosen Vipasana, please enter the path of the plaintext file :\n");
+		cin.clear();
+		cin >> plainpath;
+		printf("Now, please enter the path of the cipheredtext file :\n");
+		cin.clear();
+		cin >> cipheredpath;
+
+		// TODO INSTANCIER VIPASANA
+
+	}
+
+	string line;
+	string delimiter("|");
+	while(getline(file,line)){
+		string ransomware_name = line.substr(0, line.find(delimiter));
+		string file_name = line.substr(line.find(delimiter)+1, line.size());
+
+		// Vipasana file, need the Vipasana Recovery Tool
+		if(!ransomware_name.compare("Vipasana")){
+
+		}
+	}
+	file.close();
 }
 
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	// Initializing recovery tool available.
+	recovery_tools.push_back("Vipasana");
+
 	short userChoice = 0;
 	printFirstMenu();
 	do{
@@ -130,18 +202,15 @@ int _tmain(int argc, _TCHAR* argv[])
 			path = askUserForPath();
 
 			init_threading();
-
 			listDirectory(path);
-
 			end_threading();
-			// Scan general et rapport
 
-			// Scan appliqué aux ransomwares (Vipasana, ...) et rapport
-
+			write_report();
 			break;
 		case 2:
-			// Opening the file wih ciphered files' name and asking for a path
-			path = askUserForPath();
+			// Opening the C:/ciphered_files_list.txt and try to recover files according to the attached ransomware's name.
+			short selected_id = askUserForRecoveryTool();
+			recover_files(selected_id);
 			break;
 	}
 

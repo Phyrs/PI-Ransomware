@@ -68,3 +68,13 @@ void AnalyzerChiSquared::analyzer_result(){
 int AnalyzerChiSquared::get_result(){
 	return a_result;
 }
+
+
+bool AnalyzerChiSquared::is_ciphered_by_ransomware(){
+	return (a_result ? true : false);
+}
+
+
+std::string AnalyzerChiSquared::get_ransomware_name(){
+	return std::string("unknown");
+}

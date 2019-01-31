@@ -118,3 +118,13 @@ void AnalyzerVipasana::check_first_bytes(){
 
 	free(startbuffer);
 }
+
+
+bool AnalyzerVipasana::is_ciphered_by_ransomware(){
+	return (filenamecheck && endsigncheck && firstbytescheck);
+}
+
+
+std::string AnalyzerVipasana::get_ransomware_name(){
+	return std::string("Vipasana");
+}
