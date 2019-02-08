@@ -121,7 +121,7 @@ void AnalyzerVipasana::check_first_bytes(){
 
 
 bool AnalyzerVipasana::is_ciphered_by_ransomware(){
-	return (filenamecheck && endsigncheck && firstbytescheck);
+	return (endsigncheck && firstbytescheck);
 }
 
 

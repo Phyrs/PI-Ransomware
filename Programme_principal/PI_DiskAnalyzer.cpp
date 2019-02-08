@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <strsafe.h>
 #include "multithreading.h"
+#include "VipasanaRecover.h"
 #pragma comment(lib, "User32.lib")
 
 using namespace std;
@@ -151,6 +152,8 @@ void recover_files(short id_tool_selected){
 		return;
 	}
 
+	VipasanaRecover *vipasanaRecover;
+
 	// Preparing Vipasana Recovery Files
 	if(!string("Vipasana").compare(recovery_tools[id_tool_selected])){
 		string plainpath = "";
@@ -163,19 +166,19 @@ void recover_files(short id_tool_selected){
 		cin.clear();
 		cin >> cipheredpath;
 
-		// TODO INSTANCIER VIPASANA
-
+		vipasanaRecover = new VipasanaRecover(plainpath, cipheredpath);
 	}
 
+	// Iterating through the list to recover.
 	string line;
 	string delimiter("|");
 	while(getline(file,line)){
 		string ransomware_name = line.substr(0, line.find(delimiter));
-		string file_name = line.substr(line.find(delimiter)+1, line.size());
+		string file_path = line.substr(line.find(delimiter)+1, line.size());
 
 		// Vipasana file, need the Vipasana Recovery Tool
 		if(!ransomware_name.compare("Vipasana")){
-
+			vipasanaRecover->decipher(file_path);
 		}
 	}
 	file.close();
