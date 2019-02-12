@@ -8,7 +8,6 @@
 // !!! pas oublier de free structures apres malloc
 // pas oublier de free les handle apres malloc
 
-#include "stdafx.h"
 #include <windows.h>
 #include <fstream>
 #include <string>

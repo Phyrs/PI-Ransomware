@@ -1,6 +1,6 @@
 #include "Analyzer_Vipasana.h"
 #include "Analyzer_Chi_Squared.h"
-#include "multithreading.h"
+#include "../tools/multithreading.h"
 
 /**
  * Intitialize analyzer variables

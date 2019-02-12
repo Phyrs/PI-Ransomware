@@ -5,8 +5,8 @@
 // pas oublier de free les handle apres malloc
 
 #include "multithreading.h"
-#include "Analyzer_Chi_Squared.h"
-#include "Analyzer_Vipasana.h"
+#include "../analyzers/Analyzer_Chi_Squared.h"
+#include "../analyzers/Analyzer_Vipasana.h"
 #include <vector>
 #include <string>
 

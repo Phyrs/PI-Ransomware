@@ -5,7 +5,6 @@
  *   It also lets you try to recover the files if they have been ciphered by a ransomware whose a recovery module is available for that soft.
  */
 
-#include "stdafx.h"
 #include "stdlib.h"
 #include <sys/stat.h>
 #include <iostream>
@@ -16,57 +15,16 @@
 #include <tchar.h> 
 #include <stdio.h>
 #include <strsafe.h>
-#include "multithreading.h"
-#include "VipasanaRecover.h"
+
+#include "tools/multithreading.h"
+#include "tools/menu.h"
+#include "recoverers/VipasanaRecover.h"
+
 #pragma comment(lib, "User32.lib")
 
 using namespace std;
 
 vector <string> recovery_tools;
-const char *cipheredFileName = "C:/cipheredfiles_list.txt";
-
-void printFirstMenu(){
-	printf("---------------------------------------------------------\n");
-	printf("                     DiskAnalyzer                        \n");
-	printf("---------------------------------------------------------\n");
-	printf("\n");
-	printf("This tool will analyze your file system in order to detect if it has been ciphered or not.\n");
-}
-
-void printChoiceMenu(){
-	printf("Please choose an option (enter 1 or 2) :\n");
-	printf(" 1 - Analyze Disk\n");
-	printf(" 2 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.\n", cipheredFileName);
-}
-
-short getUserChoice(){
-	short choice;
-	cin >> choice;
-	if(cin.fail()){
-		cin.clear();
-//		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		return 0;
-	}
-	return  choice;
-}
-
-string askUserForPath(){
-	bool isPathOrDir = false;
-	string path = "";
-	do{
-		printf("\n Please enter a specific path (to a directory or a file) to consider (Enter C:/ to analyze the whole disk) :\n");
-		cin.clear();
-		//cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cin >> path;
-		struct stat s;
-		if(stat(path.c_str(), &s) == 0){
-			if(s.st_mode & S_IFDIR || s.st_mode & S_IFREG){
-				isPathOrDir = true;
-			}
-		}
-	} while (!isPathOrDir);
-	return path;
-}
 
 short askUserForRecoveryTool(){
 	short id = -1;
@@ -130,13 +88,11 @@ void listDirectory(string path){
 }
 
 void write_report(){
-
 	ofstream file(cipheredFileName);
 	if(!file.is_open()){
 		printf("Error while writing log...\n");
 		return;
 	}
-
 	for(vector<string>::iterator it = ciphered_files_path.begin() ; it != ciphered_files_path.end() ; ++it){
 		file << *it;
 	}
@@ -158,13 +114,10 @@ void recover_files(short id_tool_selected){
 	if(!string("Vipasana").compare(recovery_tools[id_tool_selected])){
 		string plainpath = "";
 		string cipheredpath = "";
+		printf("You have chosen Vipasana.\n");
 
-		printf("You have chosen Vipasana, please enter the path of the plaintext file :\n");
-		cin.clear();
-		cin >> plainpath;
-		printf("Now, please enter the path of the cipheredtext file :\n");
-		cin.clear();
-		cin >> cipheredpath;
+		plainpath = askUserForFilePath(true);
+		cipheredpath = askUserForFilePath(false);
 
 		vipasanaRecover = new VipasanaRecover(plainpath, cipheredpath);
 	}
@@ -201,13 +154,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	string path("");
 	switch(userChoice){
 		case 1:
-			// Asking for a path.
 			path = askUserForPath();
-
 			init_threading();
 			listDirectory(path);
 			end_threading();
-
 			write_report();
 			break;
 		case 2:
