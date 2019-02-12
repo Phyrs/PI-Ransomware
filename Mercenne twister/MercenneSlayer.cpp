@@ -3,6 +3,7 @@
 
 using namespace std;
 
+//Fonctionne pour w = 32 (facile a adapter au cas general)
 int inverserGauche(int x, int masque, short decalage)
 {
     for (short i=0; i<32-decalage; i++)
@@ -13,6 +14,7 @@ int inverserGauche(int x, int masque, short decalage)
     return x;
 } 
 
+//Fonctionne pour w = 32 (facile a adapter au cas general)
 int inverserDroite(int x, int masque, short decalage)
 {
     for (short i=31-decalage; i >= 0; i--)
@@ -58,10 +60,7 @@ void MercenneSlayer::sEtats(int nombresAleatoires[])
     for (short i=0; i<nbIEtats; i++) iEtats[i] = inverserExtraction(nombresAleatoires[i]);
 
     short i;
-    for (i=0; i<n; i++)
-    {
-        if (etatSuivant(iEtats+i, m) == iEtats[i+n+m]) break;
-    }
+    for (i=0; i<n; i++) if (etatSuivant(iEtats+i, m) == iEtats[i+n+m]) break;
     
     for (short j=0; i<nbIEtats; j++) etats[j] = iEtats[i+j];
 }
