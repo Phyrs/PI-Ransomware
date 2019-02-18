@@ -45,7 +45,10 @@ int chi_squared_test(double sample_sd, unsigned sample_size, double p_value);
  */
 DWORD WINAPI chi_square_byte_analysis( LPVOID file_data );
 
-void init_threading();
+/**
+ * @param reportPath path to the general report in which the pgm will write the differents analyzers results.
+ */
+void init_threading(string reportPath);
 
 void end_threading();
 

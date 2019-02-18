@@ -61,8 +61,11 @@ void AnalyzerChiSquared::analyzer_compute(){
 /**
  * Print / save in a log file the a_result of the scan
  */
-void AnalyzerChiSquared::analyzer_result(){
-	printf(" - All the file's bytes have been ciphered : %s\n", (a_result ? "yes" : "no"));
+std::string AnalyzerChiSquared::analyzer_result(){
+	std::string res(" - All the file's bytes have been ciphered : ");
+	res.append((a_result ? "yes" : "no"));
+	res.append("\n");
+	return res;
 }
 
 int AnalyzerChiSquared::get_result(){
@@ -76,5 +79,5 @@ bool AnalyzerChiSquared::is_ciphered_by_ransomware(){
 
 
 std::string AnalyzerChiSquared::get_ransomware_name(){
-	return std::string("unknown");
+	return std::string("Unknown");
 }

@@ -6,11 +6,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <stdio.h>
 
 using namespace std;
 
 string cipheredFileName("C:/cipheredfiles_list.txt");
+string reportFileName("C:/analysis_detailed_report.txt");
+vector<string> recovery_tools;
 
 
 void printFirstMenu(){
@@ -24,7 +27,7 @@ void printFirstMenu(){
 void printChoiceMenu(){
 	printf("Please choose an option (enter 1 or 2) :\n");
 	printf(" 1 - Analyze Disk\n");
-	printf(" 2 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.\n", cipheredFileName);
+	printf(" 2 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.\n", cipheredFileName.c_str());
 }
 
 short getUserChoice(){
@@ -83,3 +86,20 @@ bool isAFile(string path){
 	}
 	return false;
 }
+
+short askUserForRecoveryTool(){
+	short id = -1;
+	do{
+		printf("\n Please select a recovery tool among the following :\n");
+		printf(" 1 - Vipasana Recovery tool (require a plain and a ciphered text)\n");
+		cin.clear();
+		cin >> id;
+		if(cin.fail()){
+			cin.clear();
+			id = 0;
+		}
+		id--;
+	} while (id < 0 || id > recovery_tools.size()-1);
+	return id;
+}
+

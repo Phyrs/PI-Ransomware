@@ -9,6 +9,9 @@
 #include "../analyzers/Analyzer_Vipasana.h"
 #include <vector>
 #include <string>
+#include <stdio.h>
+#include <strsafe.h>
+#include <iostream>
 
 HANDLE WRITE_MUTEX;             // to ensure that write operations on log output are safe
 HANDLE THREAD_COUNT_SEMAPHORE;
@@ -27,6 +30,8 @@ typedef struct THREAD_DATA_ THREAD_DATA;
 THREAD_DATA* td_[MAX_THREAD_COUNT];
 
 vector<std::string> ciphered_files_path;
+
+ofstream detailed_report_file;
 
 /**
  * Returns the size (in bytes) of targetted file
@@ -93,7 +98,7 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
             WRITE_MUTEX,    // handle to mutex
             INFINITE);      // no time-out interval
 
-	printf("\nResults for %s : \n", td->file_path);
+	/*printf("\nResults for %s : \n", td->file_path);
 	for(int j = 0; j < ANALYZERS_NUMBER; j++){
 		tabAnalyzers[j]->analyzer_result();
 	}
@@ -108,7 +113,27 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 			ciphered_files_path.push_back(name);
 			break;
 		}
+	}*/
+
+	detailed_report_file << "\nResults for ";
+	detailed_report_file <<	td->file_path;
+	detailed_report_file << "\n";
+	for(int j = 0; j < ANALYZERS_NUMBER; j++){
+		detailed_report_file << tabAnalyzers[j]->analyzer_result().c_str();
 	}
+
+	for(int j = ANALYZERS_NUMBER-1; j >= 0; j--){
+		if(tabAnalyzers[j]->is_ciphered_by_ransomware()){
+			string name = tabAnalyzers[j]->get_ransomware_name();
+			name.append("|");
+			name.append(td->file_path);
+			name.append("\n");
+
+			ciphered_files_path.push_back(name);
+			break;
+		}
+	}
+
 	ReleaseMutex(WRITE_MUTEX); 
 
 	td->thread_id= -1;
@@ -120,7 +145,7 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 	return 0;
 }
 
-void init_threading(){
+void init_threading(string reportPath){
 	WRITE_MUTEX = CreateMutex(NULL,          // default security attributes
 						     FALSE,          // initially not owned
 						     NULL);          // unnamed mutex
@@ -136,6 +161,14 @@ void init_threading(){
 		td_[i]= (THREAD_DATA*) malloc(sizeof(THREAD_DATA));
 		*(td_[i])= THREAD_DATA_DEFAULT;
 	}
+
+	// opening reportfile
+	detailed_report_file.open(reportPath);
+	if(!detailed_report_file.is_open()){
+		printf("Error while write in %s...\n", reportPath.c_str());
+		return ;
+	}
+	printf("Analyzing and generating %s...\n", reportPath.c_str());
 }
 
 void end_threading(){
@@ -166,6 +199,7 @@ void end_threading(){
 		delete td_[j];
 	CloseHandle(WRITE_MUTEX);
     CloseHandle(THREAD_COUNT_SEMAPHORE);
+	detailed_report_file.close();
 }
 
 void launch_thread(const char *file_path){

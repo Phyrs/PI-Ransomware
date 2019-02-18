@@ -12,7 +12,7 @@ class AnalyzerChiSquared : public Analyzer
 	virtual bool analyzer_in_range(long cursor);
 	virtual void analyzer_process(char* buffer, int readbytes, long cursor);
 	virtual void analyzer_compute();
-	virtual void analyzer_result();
+	virtual std::string analyzer_result();
 	virtual bool is_ciphered_by_ransomware();
 	virtual std::string get_ransomware_name();
 	int get_result();

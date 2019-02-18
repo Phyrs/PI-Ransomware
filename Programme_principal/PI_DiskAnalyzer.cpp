@@ -24,24 +24,6 @@
 
 using namespace std;
 
-vector <string> recovery_tools;
-
-short askUserForRecoveryTool(){
-	short id = -1;
-	do{
-		printf("\n Please select a recovery tool among the following :\n");
-		printf(" 1 - Vipasana Recovery tool (require a plain and a ciphered text)\n");
-		cin.clear();
-		cin >> id;
-		if(cin.fail()){
-			cin.clear();
-			id = 0;
-		}
-		id--;
-	} while (id < 0 || id > recovery_tools.size()-1);
-	return id;
-}
-
 void listDirectory(string path){
    WIN32_FIND_DATA ffd;
    TCHAR szDir[MAX_PATH];
@@ -98,13 +80,13 @@ void write_report(){
 	}
 	file.close();
 
-	printf("%s generated.\n", cipheredFileName);
+	printf("%s generated.\n", cipheredFileName.c_str());
 }
 
 void recover_files(short id_tool_selected){
 	ifstream file(cipheredFileName);
 	if(!file.is_open()){
-		printf("Error while opening %s\n", cipheredFileName);
+		printf("Error while opening %s\n", cipheredFileName.c_str());
 		return;
 	}
 
@@ -137,7 +119,6 @@ void recover_files(short id_tool_selected){
 	file.close();
 }
 
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// Initializing recovery tool available.
@@ -155,7 +136,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	switch(userChoice){
 		case 1:
 			path = askUserForPath();
-			init_threading();
+			init_threading(reportFileName);
 			listDirectory(path);
 			end_threading();
 			write_report();

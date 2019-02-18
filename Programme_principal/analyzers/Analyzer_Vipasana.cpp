@@ -71,11 +71,18 @@ void AnalyzerVipasana::analyzer_compute(){
 }
 
 
-void AnalyzerVipasana::analyzer_result(){
-	printf(" - Vipasana analysis :\n");
-	printf("   - File's name corresponds to the Vipasana pattern : %s\n", (filenamecheck ? "yes" : "no"));
-	printf("   - File's end contains the Vipasana's signature  : %s\n", (endsigncheck ? "yes" : "no"));
-	printf("   - The 768 first bytes have been ciphered : %s\n", (firstbytescheck ? "yes" : "no"));
+std::string AnalyzerVipasana::analyzer_result(){
+	std::string res(" - Vipasana analysis :\n");
+	res.append("   - File's name corresponds to the Vipasana pattern : ");
+	res.append((filenamecheck ? "yes" : "no"));
+	res.append("\n");
+	res.append("   - File's end contains the Vipasana's signature  : ");
+	res.append((endsigncheck ? "yes" : "no"));
+	res.append("\n");
+	res.append("   - The 768 first bytes have been ciphered : ");
+	res.append((firstbytescheck ? "yes" : "no"));
+	res.append("\n");
+	return res;
 }
 
 

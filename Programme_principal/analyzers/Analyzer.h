@@ -28,7 +28,7 @@ class Analyzer
 	/**
 	 * Print / save in a log file the result of the scan
 	 */
-	virtual void analyzer_result() =0;
+	virtual std::string analyzer_result() =0;
 	
 	/**
 	 *  Tell if the file has been ciphered or not by the analyzer's ransomware
