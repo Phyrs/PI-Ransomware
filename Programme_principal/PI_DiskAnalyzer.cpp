@@ -5,6 +5,9 @@
  *   It also lets you try to recover the files if they have been ciphered by a ransomware whose a recovery module is available for that soft.
  */
 
+
+#include <stdio.h>
+#include "analyzers/Pcap_Investigator.h"
 #include "stdlib.h"
 #include <sys/stat.h>
 #include <iostream>
@@ -13,9 +16,8 @@
 #include <string>
 #include <windows.h>
 #include <tchar.h> 
-#include <stdio.h>
-#include <strsafe.h>
 
+#include <strsafe.h>
 #include "tools/multithreading.h"
 #include "tools/menu.h"
 #include "recoverers/VipasanaRecover.h"
@@ -98,8 +100,8 @@ void recover_files(short id_tool_selected){
 		string cipheredpath = "";
 		printf("You have chosen Vipasana.\n");
 
-		plainpath = askUserForFilePath(true);
-		cipheredpath = askUserForFilePath(false);
+		plainpath = askUserForFilePath(string("Please enter the path of the plaintext file :\n"));
+		cipheredpath = askUserForFilePath(string("Now, please enter the path of the cipheredtext file :\n"));
 
 		vipasanaRecover = new VipasanaRecover(plainpath, cipheredpath);
 	}
@@ -130,7 +132,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		printChoiceMenu();
 		userChoice = getUserChoice();
 
-	} while(userChoice != 1 && userChoice != 2) ;
+	} while(userChoice != 1 && userChoice != 2 && userChoice != 3) ;
 
 	string path("");
 	switch(userChoice){
@@ -142,6 +144,10 @@ int _tmain(int argc, _TCHAR* argv[])
 			write_report();
 			break;
 		case 2:
+			path = askUserForFilePath(string("Please enter the path to your Pcap file: \n"));
+			pcap_parse_file(path);
+			break;
+		case 3:
 			// Opening the C:/ciphered_files_list.txt and try to recover files according to the attached ransomware's name.
 			short selected_id = askUserForRecoveryTool();
 			recover_files(selected_id);

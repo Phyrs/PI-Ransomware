@@ -17,7 +17,7 @@ short getUserChoice();
 
 string askUserForPath();
 
-string askUserForFilePath(bool plain);
+string askUserForFilePath(string text);
 
 bool isADirectory(string path);
 

@@ -27,7 +27,8 @@ void printFirstMenu(){
 void printChoiceMenu(){
 	printf("Please choose an option (enter 1 or 2) :\n");
 	printf(" 1 - Analyze Disk\n");
-	printf(" 2 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.\n", cipheredFileName.c_str());
+	printf(" 2 - Analyze Pcap file\n");
+	printf(" 3 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.\n", cipheredFileName.c_str());
 }
 
 short getUserChoice(){
@@ -52,14 +53,11 @@ string askUserForPath(){
 	return path;
 }
 
-string askUserForFilePath(bool plain){
+string askUserForFilePath(string text){
 	bool isPathAFile = false;
 	string path = "";
 	do{
-		if(plain)
-			printf("Please enter the path of the plaintext file :\n");
-		else
-			printf("Now, please enter the path of the cipheredtext file :\n");
+		printf(text.c_str());
 		cin.clear();
 		cin >> path;
 		isPathAFile = isAFile(path);
