@@ -33,7 +33,7 @@ int is_big_endian(){
  * @param endianness {string}: 1 if byte-order of current host and byte-order of Pcap file match, orhterwise 0
  *                             currently not used
  */
-void packet_analyzer_hidden_tear(const u_char* data){
+int packet_analyzer_hidden_tear(const u_char* data){
 	u_short buff;
 	// Network byte-order is big-endian (foe Ethernet, IP and TCp/UDP protocols), i.e. conversion is needed if host is little-endian
 	int big_endian= is_big_endian();
@@ -48,88 +48,105 @@ void packet_analyzer_hidden_tear(const u_char* data){
 	buff= ((u_short*)data)[6];
 	if(!big_endian)
 		switch_bytes((char*)(&buff), 2);
-	if(buff==0x800){ // 0x800: IPV4 
-		data+= 14;           // Ptr is on IP Header
-		// ----- ii: IP Header
-		if(((data[0] >> 4) & 0xf)==0x4){    // Verify that IP version is 4
-			if(data[9]==0x6){               // Protocol is TCP
-				data+= (data[0] & 0xf) * 4; // Ptr is on TCP Header
-			
-				// ----- iii: TCP Header
-				buff= ((u_short*)data)[1]; // TCP dest port
-				if(!big_endian)
-					switch_bytes((char*)(&buff), 2);
-				if(buff== 80 ||
-				   buff== 3128 ||
-				   buff== 3132 ||
-				   buff== 5985 ||
-				   buff== 8080 ||
-				   buff== 8088 ||
-				   buff== 11371 ||
-				   buff== 1900 ||
-				   buff== 2869 ||
-				   buff== 2710){ // List of TCP ports associated by Wireshark to the HTTP protocol (but not always true)
-					data+= ((data[12] >> 4) & 0xf) * 4; // Ptr is on (seemingly) HTTP Header
-					// ----- iii: HTTP Body
-					// The HTTP request of the Hidden-Tear message to the distant server has the following structure:
-					// GET [server_url]?files=[computer_name]-[user_name]%20[PASSWORD] HTTP/1.1
-					// Aborted: piece of code that compare targetted message with current Machine and User name (cf problem: only work on infected computer)
-					if(strncmp((char*)data, "GET ", 4)==0){
-						data+= 4;
-						data= (u_char*)strstr((char*)data, "?files=");
-						if(data!=NULL){
-							// i: get length of message
-							data+= 7;
-							u_char* data_= (u_char*)strstr((char*)data, " HTTP/1.1");
-							int urlencoded_len= data_ - data;
-							// ii: is there a candidat for an Hidden-Tear password (i.e. string ends with %20 followed by 15 characters, with some potentially url-encoded)
-							char* urlencoded= new char[urlencoded_len];
-							strncpy(urlencoded, (char*)data, urlencoded_len);
-							int i, len_enc= 0, len_dec= 0;
-							char previous_char= 0, pprevious_char= 0;
-							for(i= urlencoded_len-1; i>=0; i--){
-								pprevious_char= previous_char;
-								previous_char= data[i+1];
-								len_dec++;
-								len_enc++;
-								if(data[i]==0x25){ // % character
-									len_dec-=2;
-									if(previous_char==0x32 && pprevious_char==0x30)
-										break;
+	u_short ip_vers= buff;
+	switch(buff){
+		case 0x800: // ipv4
+		case 0x86DD:// ipv6
+			data+= 14;
+			buff= ((data[0] >> 4) & 0xf);
+			switch(buff){
+				case 0x4:
+					if(ip_vers==0x800 && data[9]==0x6){ // if protocol is TCP
+						data+= (data[0] & 0xf) * 4; // Ptr is on TCP Header
+					}else{
+						return 0;
+					}
+					break;
+				case 0x6:
+					if(ip_vers==0x86DD && data[6]==0x6){ // if protocol is TCP
+						data+= 40; // Ptr is on TCP Header (ipv6 header has a fixed length of 40 bytes) -> for now, additional headers are not taken in account
+					}else{
+						return 0;
+					}
+					break;
+				default:
+					return 0;
+			}
+			// ----- iii: TCP Header
+			buff= ((u_short*)data)[1]; // TCP dest port
+			if(!big_endian)
+				switch_bytes((char*)(&buff), 2);
+			if(buff== 80 ||
+				buff== 3128 ||
+				buff== 3132 ||
+				buff== 5985 ||
+				buff== 8080 ||
+				buff== 8088 ||
+				buff== 11371 ||
+				buff== 1900 ||
+				buff== 2869 ||
+				buff== 2710){ // List of TCP ports associated by Wireshark to the HTTP protocol (but not always true)
+				data+= ((data[12] >> 4) & 0xf) * 4; // Ptr is on (seemingly) HTTP Header
+				// ----- iii: HTTP Body
+				// The HTTP request of the Hidden-Tear message to the distant server has the following structure:
+				// GET [server_url]?files=[computer_name]-[user_name]%20[PASSWORD] HTTP/1.1
+				// Aborted: piece of code that compare targetted message with current Machine and User name (cf problem: only work on infected computer)
+				if(strncmp((char*)data, "GET ", 4)==0){
+					data+= 4;
+					data= (u_char*)strstr((char*)data, "?files=");
+					if(data!=NULL){
+						// i: get length of message
+						data+= 7;
+						u_char* data_= (u_char*)strstr((char*)data, " HTTP/1.1");
+						int urlencoded_len= data_ - data;
+						// ii: is there a candidat for an Hidden-Tear password (i.e. string ends with %20 followed by 15 characters, with some potentially url-encoded)
+						char* urlencoded= new char[urlencoded_len];
+						strncpy(urlencoded, (char*)data, urlencoded_len);
+						int i, len_enc= 0, len_dec= 0;
+						char previous_char= 0, pprevious_char= 0;
+						for(i= urlencoded_len-1; i>=0; i--){
+							pprevious_char= previous_char;
+							previous_char= data[i+1];
+							len_dec++;
+							len_enc++;
+							if(data[i]==0x25){ // % character
+								len_dec-=2;
+								if(previous_char==0x32 && pprevious_char==0x30)
+									break;
+							}
+						}
+						len_dec-= 1; // last % (of %20) must not be counted
+						len_enc-= 3;
+						if(len_dec==15){ // 15: password size in Hidden-Tear: candidat found
+							char urldecoded[15];
+							int cursor= urlencoded_len-len_enc;
+							for(i= 0; i<15; i++){
+								// Only the special characters !, =, &, ? and / are used in the Hidden-Tear password (* and ! are not a special character)
+								if(      urlencoded[cursor]==0x25 && urlencoded[cursor+1]==0x33 && urlencoded[cursor+2]==0x44){ // = (0x3D)
+									cursor+=3;
+									urldecoded[i]= 0x3D;
+								}else if(urlencoded[cursor]==0x25 && urlencoded[cursor+1]==0x32 && urlencoded[cursor+2]==0x36){ // & (0x26)
+									cursor+=3;
+									urldecoded[i]= 0x26;
+								}else if(urlencoded[cursor]==0x25 && urlencoded[cursor+1]==0x33 && urlencoded[cursor+2]==0x46){ // ? (0x3F)
+									cursor+=3;
+									urldecoded[i]= 0x3F;
+								}else if(urlencoded[cursor]==0x25 && urlencoded[cursor+1]==0x32 && urlencoded[cursor+2]==0x46){ // / (0x2F)
+									cursor+=3;
+									urldecoded[i]= 0x2F;
+								}else{
+									urldecoded[i]= urlencoded[cursor];
+									cursor+=1;
 								}
 							}
-							len_dec-= 1; // last % (of %20) must not be counted
-							len_enc-= 3;
-							if(len_dec==15){ // 15: password size in Hidden-Tear: candidat found
-								char urldecoded[15];
-								int cursor= urlencoded_len-len_enc;
-								for(i= 0; i<15; i++){
-									// Only the special characters !, =, &, ? and / are used in the Hidden-Tear password (* and ! are not a special character)
-									if(      urlencoded[cursor]==0x25 && urlencoded[cursor+1]==0x33 && urlencoded[cursor+2]==0x44){ // = (0x3D)
-										cursor+=3;
-										urldecoded[i]= 0x3D;
-									}else if(urlencoded[cursor]==0x25 && urlencoded[cursor+1]==0x32 && urlencoded[cursor+2]==0x36){ // & (0x26)
-										cursor+=3;
-										urldecoded[i]= 0x26;
-									}else if(urlencoded[cursor]==0x25 && urlencoded[cursor+1]==0x33 && urlencoded[cursor+2]==0x46){ // ? (0x3F)
-										cursor+=3;
-										urldecoded[i]= 0x3F;
-									}else if(urlencoded[cursor]==0x25 && urlencoded[cursor+1]==0x32 && urlencoded[cursor+2]==0x46){ // / (0x2F)
-										cursor+=3;
-										urldecoded[i]= 0x2F;
-									}else{
-										urldecoded[i]= urlencoded[cursor];
-										cursor+=1;
-									}
-								}
-								printf("Candidat found: %.*s\n", 15, urldecoded);
-							}
+							printf("Candidat found: %.*s\n", 15, urldecoded);
 						}
 					}
 				}
 			}
-		}
-
+			break;
+		default:
+			return 0;
 	}
 }
 
