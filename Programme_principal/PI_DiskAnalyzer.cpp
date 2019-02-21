@@ -71,20 +71,6 @@ void listDirectory(string path){
    FindClose(hFind);
 }
 
-void write_report(){
-	ofstream file(cipheredFileName);
-	if(!file.is_open()){
-		printf("Error while writing log...\n");
-		return;
-	}
-	for(vector<string>::iterator it = ciphered_files_path.begin() ; it != ciphered_files_path.end() ; ++it){
-		file << *it;
-	}
-	file.close();
-
-	printf("%s generated.\n", cipheredFileName.c_str());
-}
-
 void recover_files(short id_tool_selected){
 	ifstream file(cipheredFileName);
 	if(!file.is_open()){
@@ -141,7 +127,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			init_threading(reportFileName);
 			listDirectory(path);
 			end_threading();
-			write_report();
+			write_report(ciphered_files_path, cipheredFileName);
 			break;
 		case 2:
 			path = askUserForFilePath(string("Please enter the path to your Pcap file: \n"));

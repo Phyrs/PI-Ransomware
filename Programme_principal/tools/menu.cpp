@@ -13,6 +13,7 @@ using namespace std;
 
 string cipheredFileName("C:/cipheredfiles_list.txt");
 string reportFileName("C:/analysis_detailed_report.txt");
+string hiddenReportFileName("C:/hidden_tear_report.txt");
 vector<string> recovery_tools;
 
 
@@ -101,3 +102,16 @@ short askUserForRecoveryTool(){
 	return id;
 }
 
+void write_report(vector<string> list, string path){
+	ofstream file(path);
+	if(!file.is_open()){
+		printf("Error while writing log...\n");
+		return;
+	}
+	for(vector<string>::iterator it = list.begin() ; it != list.end() ; ++it){
+		file << *it;
+	}
+	file.close();
+
+	printf("%s generated.\n", path.c_str());
+}

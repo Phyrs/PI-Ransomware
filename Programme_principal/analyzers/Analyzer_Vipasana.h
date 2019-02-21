@@ -21,7 +21,7 @@ class AnalyzerVipasana : public Analyzer
 
 	long file_size;
 	char endbuffer[50000];
-	char *startbuffer;
+	char *startbuffer; // 768 first bit
 	bool filenamecheck, endsigncheck, firstbytescheck;
 
 	void check_file_name();

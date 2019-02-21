@@ -1,11 +1,15 @@
 #include "Pcap_Investigator.h"
+#include "../tools/menu.h"
 #include <fstream>
+#include <string>
+#include <vector>
 #include <pcap.h>
 #include <Windows.h>
 
 using namespace std;
 
 int endianness;
+vector<string> hidden_tear_pass;
 
 void switch_bytes(char* target, int target_size){
 	char* buffer= new char[target_size];
@@ -139,7 +143,9 @@ int packet_analyzer_hidden_tear(const u_char* data){
 									cursor+=1;
 								}
 							}
-							printf("Candidat found: %.*s\n", 15, urldecoded);
+							char buffer [50];
+							sprintf(buffer, "Candidat for hidden tear found : %.*s\n", 15, urldecoded);
+							hidden_tear_pass.push_back(string(buffer));
 						}
 					}
 				}
@@ -172,6 +178,7 @@ void pcap_process_hidden_tear(pcap_t* pcap){
 		packet_analyzer_hidden_tear(data);
     }
 	printf("End of search for Hidden Tear password...\n");
+	write_report(hidden_tear_pass, hiddenReportFileName);
 }
 
 /**

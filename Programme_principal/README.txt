@@ -16,6 +16,7 @@ WpdPack: - mettre le path vers le répertoire Include de WpdPack dans Propriét�
          - mettre le path vers le répertoire Lib de WpdPack dans Propriétés de configuration -> Répertoires VC++ -> Répertoires de bibliothèques
          - ajouter la chaîne WPCAP dans Propriétés de configuration -> C/C++ -> Préprocesseur -> Définitions de préprocesseur
          - ajouter la chaîne wpcap.lib dans Propriétés de configuration -> Éditeur de liens -> Dépendances supplémentaires
+	 - Installer WINPcap, qui ajoutera la DLL nécessaire dans System 32.
 // WinPcap requirements:
 // Libray: https://www.winpcap.org/devel.htm
 // Doc: https://www.winpcap.org/docs/docs_411/html/group__wpcapsamps.html

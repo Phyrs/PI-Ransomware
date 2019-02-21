@@ -13,7 +13,7 @@ AnalyzerVipasana::AnalyzerVipasana(char* file_path, long filesize) : Analyzer(fi
 }
 
 /**
- * Vipasana Anayzer requires : the filename, the last 50.000 bytes (checking the signature) and the first 768 bytes.
+ * Vipasana Anayzer requires : the filename, the last 50.000 bytes (checking the signature), the first 768 bytes and 768 to 30.000 bytes.
  */
 bool AnalyzerVipasana::analyzer_in_range(long cursor){
 	// If cursor at begenning (768 first bytes)
@@ -42,6 +42,7 @@ void AnalyzerVipasana::analyzer_process(char* buffer, int readbytes, long cursor
 		}
 
 		memcpy(startbuffer, buffer, length);
+
 	}
 	// if 50.000 last bytes.
 	int number_of_bytes_to_copy = 0;
@@ -79,7 +80,7 @@ std::string AnalyzerVipasana::analyzer_result(){
 	res.append("   - File's end contains the Vipasana's signature  : ");
 	res.append((endsigncheck ? "yes" : "no"));
 	res.append("\n");
-	res.append("   - The 768 first bytes have been ciphered : ");
+	res.append("   - The first 768 bytes have been ciphered : ");
 	res.append((firstbytescheck ? "yes" : "no"));
 	res.append("\n");
 	return res;
@@ -125,7 +126,6 @@ void AnalyzerVipasana::check_first_bytes(){
 
 	free(startbuffer);
 }
-
 
 bool AnalyzerVipasana::is_ciphered_by_ransomware(){
 	return (endsigncheck && firstbytescheck);

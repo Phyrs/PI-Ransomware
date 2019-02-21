@@ -7,6 +7,7 @@ using namespace std;
 
 extern string cipheredFileName;
 extern string reportFileName;
+extern string hiddenReportFileName;
 extern vector<string> recovery_tools;
 
 void printFirstMenu();
@@ -24,5 +25,7 @@ bool isADirectory(string path);
 bool isAFile(string path);
 
 short askUserForRecoveryTool();
+
+void write_report(vector<string> list, string path);
 
 #endif
