@@ -7,6 +7,7 @@
 #include "multithreading.h"
 #include "../analyzers/Analyzer_Chi_Squared.h"
 #include "../analyzers/Analyzer_Vipasana.h"
+#include "../analyzers/Analyzer_HiddenTear.h"
 #include <vector>
 #include <string>
 #include <stdio.h>
@@ -60,6 +61,7 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 	Analyzer *tabAnalyzers[ANALYZERS_NUMBER];
 	tabAnalyzers[0] = new AnalyzerChiSquared(td->file_path);
 	tabAnalyzers[1] = new AnalyzerVipasana(td->file_path, (int)filesize(td->file_path));
+	tabAnalyzers[2] = new AnalyzerHidden(td->file_path, tabAnalyzers[0]);
 
 	bool process = false;
 	long cursorpos = 0;
