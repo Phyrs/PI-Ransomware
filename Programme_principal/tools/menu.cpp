@@ -29,7 +29,7 @@ void printChoiceMenu(){
 	printf("Please choose an option (enter 1 or 2) :\n");
 	printf(" 1 - Analyze Disk\n");
 	printf(" 2 - Analyze Pcap file\n");
-	printf(" 3 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.\n", cipheredFileName.c_str());
+	printf(" 3 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.)\n", cipheredFileName.c_str());
 }
 
 short getUserChoice(){
@@ -66,6 +66,19 @@ string askUserForFilePath(string text){
 	return path;
 }
 
+string askUserForFifteenBytesPass(string text){
+	bool isFifteen = false;
+	string pass = "";
+	do{
+		printf(text.c_str());
+		cin.clear();
+		cin >> pass;
+		if(pass.size() == 15)
+			isFifteen = true;
+	} while (!isFifteen);
+	return pass;
+}
+
 bool isADirectory(string path){
 	struct stat s;
 	if(stat(path.c_str(), &s) == 0){
@@ -91,6 +104,7 @@ short askUserForRecoveryTool(){
 	do{
 		printf("\n Please select a recovery tool among the following :\n");
 		printf(" 1 - Vipasana Recovery tool (require a plain and a ciphered text)\n");
+		printf(" 2 - HiddenTear Recovery tool (require the 15 bytes password from a .pcap analysis or a bruteforce attack)\n");
 		cin.clear();
 		cin >> id;
 		if(cin.fail()){

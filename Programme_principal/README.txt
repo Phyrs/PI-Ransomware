@@ -26,3 +26,5 @@ WpdPack: - mettre le path vers le répertoire Include de WpdPack dans Propriét�
 *********************************
 Au lancement, le programme demande de choisir entre deux modes : l'analyse du système de fichier ou la restauration des fichiers.
 Notez qu'une analyse doit avoir été faite pour pouvoir lancer une éventuelle restauration (l'interface le précise).
+
+Si vous souhaitez utiliser les fonctions de restauration d'HiddenTear, il vous faut un lien vers les exécutables HiddenTear que vous pouvez générer à partir du code C# fourni dans le dépot. Dans notre cas, nous compilons ces programmes pour le framework .NET 4, compatible avec Windows XP.

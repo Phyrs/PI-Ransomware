@@ -144,7 +144,7 @@ int packet_analyzer_hidden_tear(const u_char* data){
 								}
 							}
 							char buffer [50];
-							sprintf(buffer, "Candidat for hidden tear found : %.*s\n", 15, urldecoded);
+							sprintf(buffer, "%.*s\n", 15, urldecoded);
 							hidden_tear_pass.push_back(string(buffer));
 						}
 					}
@@ -177,8 +177,10 @@ void pcap_process_hidden_tear(pcap_t* pcap){
     while (int returnValue = pcap_next_ex(pcap, &header, &data) >= 0){
 		packet_analyzer_hidden_tear(data);
     }
-	printf("End of search for Hidden Tear password...\n");
-	write_report(hidden_tear_pass, hiddenReportFileName);
+	printf("End of search for Hidden Tear password... %d candidats found\n", hidden_tear_pass.size());
+	if(hidden_tear_pass.size() != 0){
+		write_report(hidden_tear_pass, hiddenReportFileName);
+	}
 }
 
 /**

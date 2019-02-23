@@ -20,6 +20,8 @@ string askUserForPath();
 
 string askUserForFilePath(string text);
 
+string askUserForFifteenBytesPass(string text);
+
 bool isADirectory(string path);
 
 bool isAFile(string path);

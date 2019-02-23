@@ -21,6 +21,7 @@
 #include "tools/multithreading.h"
 #include "tools/menu.h"
 #include "recoverers/VipasanaRecover.h"
+#include "recoverers/HiddenTearRecoverer.h"
 
 #pragma comment(lib, "User32.lib")
 
@@ -79,8 +80,7 @@ void recover_files(short id_tool_selected){
 	}
 
 	VipasanaRecover *vipasanaRecover;
-
-	// Preparing Vipasana Recovery Files
+	// Preparing Vipasana Recovery tool
 	if(!string("Vipasana").compare(recovery_tools[id_tool_selected])){
 		string plainpath = "";
 		string cipheredpath = "";
@@ -90,6 +90,17 @@ void recover_files(short id_tool_selected){
 		cipheredpath = askUserForFilePath(string("Now, please enter the path of the cipheredtext file :\n"));
 
 		vipasanaRecover = new VipasanaRecover(plainpath, cipheredpath);
+	}
+
+	HiddenTearRecoverer *hiddenTearRecoverer;
+	// Preparing HiddenTear Recovery tool
+	if(!string("HiddenTearPassword").compare(recovery_tools[id_tool_selected])){
+		string password = "";
+		printf("You have chosen HiddenTear RecoveryTool.\n");
+
+		password = askUserForFifteenBytesPass(string("Please enter the 15 caracters pass you have discovered (must be 15 carac.)\n"));
+
+		hiddenTearRecoverer = new HiddenTearRecoverer(password);
 	}
 
 	// Iterating through the list to recover.
@@ -103,6 +114,9 @@ void recover_files(short id_tool_selected){
 		if(!ransomware_name.compare("Vipasana")){
 			vipasanaRecover->decipher(file_path);
 		}
+		if(!ransomware_name.compare("HiddenTear")){
+			hiddenTearRecoverer->decipher(file_path);
+		}
 	}
 	file.close();
 }
@@ -111,6 +125,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	// Initializing recovery tool available.
 	recovery_tools.push_back("Vipasana");
+	recovery_tools.push_back("HiddenTearPassword");
 
 	short userChoice = 0;
 	printFirstMenu();
