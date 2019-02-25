@@ -3,7 +3,7 @@ CFLAGS = -Wall
 EXEC_NAME = mercenne
 INCLUDES =
 LIBS =
-OBJ_FILES = main.o MercenneSlayer.o
+OBJ_FILES = main.o MercenneSlayer.o Matrice.o
 
 all : $(EXEC_NAME)
 
