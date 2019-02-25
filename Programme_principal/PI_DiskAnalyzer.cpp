@@ -5,7 +5,9 @@
  *   It also lets you try to recover the files if they have been ciphered by a ransomware whose a recovery module is available for that soft.
  */
 
-#include "stdafx.h"
+
+#include <stdio.h>
+#include "analyzers/Pcap_Investigator.h"
 #include "stdlib.h"
 #include <sys/stat.h>
 #include <iostream>
@@ -14,75 +16,16 @@
 #include <string>
 #include <windows.h>
 #include <tchar.h> 
-#include <stdio.h>
+
 #include <strsafe.h>
-#include "multithreading.h"
-#include "VipasanaRecover.h"
+#include "tools/multithreading.h"
+#include "tools/menu.h"
+#include "recoverers/VipasanaRecover.h"
+#include "recoverers/HiddenTearRecoverer.h"
+
 #pragma comment(lib, "User32.lib")
 
 using namespace std;
-
-vector <string> recovery_tools;
-const char *cipheredFileName = "C:/cipheredfiles_list.txt";
-
-void printFirstMenu(){
-	printf("---------------------------------------------------------\n");
-	printf("                     DiskAnalyzer                        \n");
-	printf("---------------------------------------------------------\n");
-	printf("\n");
-	printf("This tool will analyze your file system in order to detect if it has been ciphered or not.\n");
-}
-
-void printChoiceMenu(){
-	printf("Please choose an option (enter 1 or 2) :\n");
-	printf(" 1 - Analyze Disk\n");
-	printf(" 2 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.\n", cipheredFileName);
-}
-
-short getUserChoice(){
-	short choice;
-	cin >> choice;
-	if(cin.fail()){
-		cin.clear();
-//		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		return 0;
-	}
-	return  choice;
-}
-
-string askUserForPath(){
-	bool isPathOrDir = false;
-	string path = "";
-	do{
-		printf("\n Please enter a specific path (to a directory or a file) to consider (Enter C:/ to analyze the whole disk) :\n");
-		cin.clear();
-		//cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cin >> path;
-		struct stat s;
-		if(stat(path.c_str(), &s) == 0){
-			if(s.st_mode & S_IFDIR || s.st_mode & S_IFREG){
-				isPathOrDir = true;
-			}
-		}
-	} while (!isPathOrDir);
-	return path;
-}
-
-short askUserForRecoveryTool(){
-	short id = -1;
-	do{
-		printf("\n Please select a recovery tool among the following :\n");
-		printf(" 1 - Vipasana Recovery tool (require a plain and a ciphered text)\n");
-		cin.clear();
-		cin >> id;
-		if(cin.fail()){
-			cin.clear();
-			id = 0;
-		}
-		id--;
-	} while (id < 0 || id > recovery_tools.size()-1);
-	return id;
-}
 
 void listDirectory(string path){
    WIN32_FIND_DATA ffd;
@@ -129,44 +72,35 @@ void listDirectory(string path){
    FindClose(hFind);
 }
 
-void write_report(){
-
-	ofstream file(cipheredFileName);
-	if(!file.is_open()){
-		printf("Error while writing log...\n");
-		return;
-	}
-
-	for(vector<string>::iterator it = ciphered_files_path.begin() ; it != ciphered_files_path.end() ; ++it){
-		file << *it;
-	}
-	file.close();
-
-	printf("%s generated.\n", cipheredFileName);
-}
-
 void recover_files(short id_tool_selected){
 	ifstream file(cipheredFileName);
 	if(!file.is_open()){
-		printf("Error while opening %s\n", cipheredFileName);
+		printf("Error while opening %s\n", cipheredFileName.c_str());
 		return;
 	}
 
 	VipasanaRecover *vipasanaRecover;
-
-	// Preparing Vipasana Recovery Files
+	// Preparing Vipasana Recovery tool
 	if(!string("Vipasana").compare(recovery_tools[id_tool_selected])){
 		string plainpath = "";
 		string cipheredpath = "";
+		printf("You have chosen Vipasana.\n");
 
-		printf("You have chosen Vipasana, please enter the path of the plaintext file :\n");
-		cin.clear();
-		cin >> plainpath;
-		printf("Now, please enter the path of the cipheredtext file :\n");
-		cin.clear();
-		cin >> cipheredpath;
+		plainpath = askUserForFilePath(string("Please enter the path of the plaintext file :\n"));
+		cipheredpath = askUserForFilePath(string("Now, please enter the path of the cipheredtext file :\n"));
 
 		vipasanaRecover = new VipasanaRecover(plainpath, cipheredpath);
+	}
+
+	HiddenTearRecoverer *hiddenTearRecoverer;
+	// Preparing HiddenTear Recovery tool
+	if(!string("HiddenTearPassword").compare(recovery_tools[id_tool_selected])){
+		string password = "";
+		printf("You have chosen HiddenTear RecoveryTool.\n");
+
+		password = askUserForFifteenBytesPass(string("Please enter the 15 caracters pass you have discovered (must be 15 carac.)\n"));
+
+		hiddenTearRecoverer = new HiddenTearRecoverer(password);
 	}
 
 	// Iterating through the list to recover.
@@ -180,15 +114,18 @@ void recover_files(short id_tool_selected){
 		if(!ransomware_name.compare("Vipasana")){
 			vipasanaRecover->decipher(file_path);
 		}
+		if(!ransomware_name.compare("HiddenTear")){
+			hiddenTearRecoverer->decipher(file_path);
+		}
 	}
 	file.close();
 }
-
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// Initializing recovery tool available.
 	recovery_tools.push_back("Vipasana");
+	recovery_tools.push_back("HiddenTearPassword");
 
 	short userChoice = 0;
 	printFirstMenu();
@@ -196,21 +133,22 @@ int _tmain(int argc, _TCHAR* argv[])
 		printChoiceMenu();
 		userChoice = getUserChoice();
 
-	} while(userChoice != 1 && userChoice != 2) ;
+	} while(userChoice != 1 && userChoice != 2 && userChoice != 3) ;
 
 	string path("");
 	switch(userChoice){
 		case 1:
-			// Asking for a path.
 			path = askUserForPath();
-
-			init_threading();
+			init_threading(reportFileName);
 			listDirectory(path);
 			end_threading();
-
-			write_report();
+			write_report(ciphered_files_path, cipheredFileName);
 			break;
 		case 2:
+			path = askUserForFilePath(string("Please enter the path to your Pcap file: \n"));
+			pcap_parse_file(path);
+			break;
+		case 3:
 			// Opening the C:/ciphered_files_list.txt and try to recover files according to the attached ransomware's name.
 			short selected_id = askUserForRecoveryTool();
 			recover_files(selected_id);

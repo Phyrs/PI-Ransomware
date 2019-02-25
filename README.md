@@ -4,10 +4,13 @@ Ce dépot centralise tous les scripts / codes écrits pour ce projet industriel,
 
 - L'outil de scan de système de fichier
 - Les scripts de Recovery et d'analyse de signature des Ransomwares
+- Les ébauches et preuves de concept pour MercenneTwister, ...
 
+______________________________
 
---
-
+- /Mercenne twister : Programme C++ d'exploitation de l'attaque Mercenne Twister
+- /Multithreaded_Test_Files : Certains fichiers de tests pour Vipasana
+- /Programme_principal : Contient l'outil de scan de système de fichier et son readme.
 - /Vipasana : Programme C++ de restauration d'un fichier chiffré avec Vipasana, nécessitant un clair et un chiffré.
 - Hidden_Tear_Recovery.cs : Programme de restauration d'un fichier chiffré avec HiddenTear.
 - PI_DiskAnalyzer.cpp : Prototype du programme principal qui combinera tous les modules.
