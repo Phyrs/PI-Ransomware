@@ -25,6 +25,7 @@ class Matrice
         operator string() const;
         Matrice transposee() const;
         uint8_t get(short x, short y) const;
+        uint8_t get8(short x, short y) const;
         Matrice inverser(Matrice const &iY) const;                  //Solution de X*A = iY
         Matrice operator*(Matrice const &A) const;
         Matrice operator+(Matrice const &A) const;

@@ -165,6 +165,11 @@ uint8_t Matrice::get(short x, short y) const
     return (elements[y][x/8] & (0x80 >> iX)) >> (7-iX);
 }
 
+uint8_t Matrice::get8(short x, short y) const
+{
+    return elements[y][x];
+}
+
 Matrice Matrice::transposee() const
 {
     Matrice res(ty, tx);
@@ -234,13 +239,40 @@ Matrice Matrice::inverser(Matrice const &iY) const
         }
     }
 
+    cout << "bits non trouves :" << endl;
+
+    int bitsNuls = 0;
+    int bitsNonTrouves = 0;
+    bool isBitNonTrouve[n];
+    for (int i=0; i<n; i++) isBitNonTrouve[i] = 0;
+
     //On resoud le systeme triangulaire
     for (int i=n-1; i>=0; i--)
     {
+        if (matrice.get(i, i) == 0)
+        {
+            cout << i << " ";
+            bitsNuls++;
+        }
+
         X.elements[i][0] = Y.elements[i][0];
-        for (int j=n-1; j>i; j--) if (X.elements[j][0]) X.elements[i][0] ^= matrice.get(j, i) << 7;
+        for (int j=n-1; j>i; j--)
+        {
+            if (X.elements[j][0])
+            {
+                if (matrice.get(j, j) == 0 && matrice.get(i, i) != 0 && isBitNonTrouve[i] == 0)
+                {
+                    cout << "_" << i << " ";
+                    bitsNonTrouves++;
+                    isBitNonTrouve[i] = 1;
+                }
+
+                X.elements[i][0] ^= matrice.get(j, i) << 7;
+            }
+        }
     }
 
+    cout << "erreur " << bitsNuls << " " << bitsNonTrouves << endl;
     return X;
 }
 
