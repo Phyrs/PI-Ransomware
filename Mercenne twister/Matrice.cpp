@@ -33,12 +33,13 @@ Matrice::Matrice(short tx, short ty) : tx(tx), ty(ty), elements(new uint8_t*[ty]
     }
 }
 
-Matrice::Matrice(uint8_t const iElements[], short tx) : tx(tx), ty(1), elements(new uint8_t*[1])
+Matrice::Matrice(uint8_t const iElements[], short ty) : tx(1), ty(ty), elements(new uint8_t*[ty])
 {
-    short const iTx = (tx+7)/8;
-    elements[0] = new uint8_t[iTx];
-
-    for (short x=0; x<iTx; x++) elements[0][x] = iElements[x];
+    for (short y=0; y<ty; y++)
+    {
+        elements[y] = new uint8_t[1];
+        elements[y][0] = (iElements[y/8] & (0x80>>(y%8))) << (y%8);
+    }
 }
 
 Matrice& Matrice::operator=(Matrice const &A)
@@ -79,18 +80,31 @@ void Matrice::coller(Matrice const &A, short x1, short y1, short x2, short y2)
     short const decalageDroite = x1%8;
     short const decalageGauche = 8-decalageDroite;
 
-    uint8_t const apres = 0xFF >> decalageDroite;
-    uint8_t const avant = ~apres;
-    uint8_t const droite = (1<<decalageDroite)-1;
+    uint8_t const avant = 0xFF << decalageGauche;
+    uint8_t const apres1 = 0xFF << (8-(x2%8));
+    uint8_t const apres2 = ~apres1;
+
+    bool const isMorceauApres = x2%8;
+    bool const is2MorceauxApres = (x2-x1)%8;
 
     for (short y=y1; y<y2; y++)
     {
-        elements[y][iX1] = (elements[y][iX1] & avant) | (A.elements[y-y1][0]>>decalageDroite);
+        elements[y][iX1] = (elements[y][iX1] & avant) | (A.elements[y-y1][0] >> decalageDroite);
 
-        for (short x=iX1+1; x<iX2; x++) elements[y][x] = ((A.elements[y-y1][x-iX1-1]&droite) << decalageGauche) | (A.elements[y-y1][x-iX1] >> decalageDroite);
-        
-        if (decalageDroite) elements[y][iX2] = ((A.elements[y-y1][iX2-iX1-1]&droite) << decalageGauche) | (elements[y][iX2] & apres);
+        for (short x=iX1+1; x<iX2; x++) elements[y][x] = (A.elements[y-y1][x-iX1-1] << decalageGauche) | (A.elements[y-y1][x-iX1] >> decalageDroite);
+
+        if (isMorceauApres) 
+        {
+            elements[y][iX2] = ((A.elements[y-y1][iX2-iX1-1] << decalageGauche) & apres1) | (elements[y][iX2] & apres2);
+            if (is2MorceauxApres) elements[y][iX2] |= (A.elements[y-y1][iX2-iX1] >> decalageDroite) & apres1;
+        }
     }
+}
+
+void Matrice::set(short x, short y, short i)
+{
+    short const iX = x%8;
+    elements[y][x/8] = (elements[y][x/8] & ~(0x80 >> iX)) | (i << (7-iX));
 }
 
 short Matrice::gTx() const
@@ -151,12 +165,6 @@ uint8_t Matrice::get(short x, short y) const
     return (elements[y][x/8] & (0x80 >> iX)) >> (7-iX);
 }
 
-void Matrice::set(short x, short y, short i)
-{
-    short const iX = x%8;
-    elements[y][x/8] = (elements[y][x/8] & ~(0x80 >> iX)) | (i << (7-iX));
-}
-
 Matrice Matrice::transposee() const
 {
     Matrice res(ty, tx);
@@ -180,6 +188,62 @@ Matrice Matrice::transposee() const
     return res;
 }
 
+Matrice Matrice::inverser(Matrice const &iY) const
+{
+    int n = tx;
+    Matrice Y = iY;
+    Matrice X(1, n);
+    Matrice matrice = *this;
+
+    //On triangularise le système
+    for (int i=0; i<n; i++) //On parcours les variables
+    {
+        if (matrice.get(i, i) == 0)
+        {
+            //On trouve une ligne ou le coefficient est non nul
+            int j;
+            for (j=i+1; j<n; j++)
+            {
+                if (matrice.get(i, j))
+                {
+                    //On inverse les lignes i et j
+                    for (int k=0; k<n/8; k++)
+                    {
+                        uint8_t const inter = matrice.elements[i][k];
+                        matrice.elements[i][k] = matrice.elements[j][k];    
+                        matrice.elements[j][k] = inter;
+                    }
+
+                    uint8_t const inter = Y.elements[i][0];
+                    Y.elements[i][0] = Y.elements[j][0];
+                    Y.elements[j][0] = inter;
+                    break;
+                }
+            }
+            if (j==n) continue;
+        }
+
+        //On annule la ieme variable dans toutes les lignes en-dessous
+        for (int j=i+1; j<n; j++)
+        {
+            if (matrice.get(i, j))
+            {
+                for (int k=0; k<n/8; k++) matrice.elements[j][k] ^= matrice.elements[i][k];
+                Y.elements[j][0] ^= Y.elements[i][0];
+            }
+        }
+    }
+
+    //On resoud le systeme triangulaire
+    for (int i=n-1; i>=0; i--)
+    {
+        X.elements[i][0] = Y.elements[i][0];
+        for (int j=n-1; j>i; j--) if (X.elements[j][0]) X.elements[i][0] ^= matrice.get(j, i) << 7;
+    }
+
+    return X;
+}
+
 Matrice Matrice::bloc(short x1, short y1, short x2, short y2) const
 {
     short const iX1 = (x1+7)/8;
@@ -193,34 +257,44 @@ Matrice Matrice::bloc(short x1, short y1, short x2, short y2) const
 
 string Matrice::hexa() const
 {
-    string res = "";
-    short const iTx = tx/8;
-
-    for (short y=0; y<ty; y++)
+    if (tx == 1 && ty > 1) return "t_"+transposee().hexa();
+    else
     {
-        for (short x=0; x<iTx; x++)
-        {
-            stringstream iRes;
-            iRes << hex << (short)elements[y][x];
-            res += iRes.str();
-        }
-        res += "\n";
-    }
+        string res = "";
+        short const iTx = tx/8;
 
-    return res;
+        for (short y=0; y<ty; y++)
+        {
+            for (short x=0; x<iTx; x++)
+            {
+                stringstream iRes;
+                iRes << hex << (short)elements[y][x];
+                
+                if (iRes.str().length() == 1) res += "0";
+                res += iRes.str();
+            }
+            res += "\n";
+        }
+
+        return res;
+    }
 }
 
 Matrice::operator string() const
 {
-    string res = "";
-
-    for (short y=0; y<ty; y++)
+    if (tx == 1 && ty > 1) return "t_"+static_cast<string>(transposee());
+    else
     {
-        for (short x=0; x<tx; x++) res += '0'+get(x, y);
-        res += "\n";
-    }
+        string res = "";
 
-    return res;
+        for (short y=0; y<ty; y++)
+        {
+            for (short x=0; x<tx; x++) res += '0'+get(x, y);
+            res += "\n";
+        }
+
+        return res;
+    }
 }
 
 Matrice::~Matrice()
@@ -246,7 +320,7 @@ Matrice Matrice::id(short tx)
     return res;
 }
 
-Matrice Matrice::decalageDroite(short tx, short decalage)
+Matrice Matrice::decalageGauche(short tx, short decalage)
 {
     Matrice res(tx, tx);
     short const iTx = (tx+7)/8;
@@ -263,9 +337,9 @@ Matrice Matrice::decalageDroite(short tx, short decalage)
     return res;
 }
 
-Matrice Matrice::decalageGauche(short tx, short decalage)
+Matrice Matrice::decalageDroite(short tx, short decalage)
 {
-    return decalageDroite(tx, decalage).transposee();
+    return decalageGauche(tx, decalage).transposee();
 }
 
 Matrice Matrice::masque(uint8_t const masque[], short tx)
@@ -285,22 +359,3 @@ Matrice Matrice::masque(uint8_t const masque[], short tx)
 
     return res;
 }
-
-/*
-0000 (4, 2)
-0000
-
-000
-000 (3, 4)
-000
-000
-
-->
-
-0000
-0000
-0000
-
-000 (3, 2)
-000
-*/

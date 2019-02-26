@@ -223,53 +223,53 @@ Matrice MercenneSlayer::matriceExtraction() const
 {
     Matrice idW = Matrice::id(w);
 
-    return (idW+Matrice::decalageDroite(w, u)*Matrice::masque(intToChar(d), w))
-          *(idW+Matrice::decalageGauche(w, s)*Matrice::masque(intToChar(b), w))
-          *(idW+Matrice::decalageGauche(w, t)*Matrice::masque(intToChar(c), w))
-          *(idW+Matrice::decalageDroite(w, l));
+    return (idW+Matrice::decalageDroite(w, l))
+          *(idW+Matrice::masque(intToChar(c), w)*Matrice::decalageGauche(w, t))
+          *(idW+Matrice::masque(intToChar(b), w)*Matrice::decalageGauche(w, s))
+          *(idW+Matrice::masque(intToChar(d), w)*Matrice::decalageDroite(w, u));
 }
 
 Matrice MercenneSlayer::matriceGeneraleRandint() const
 {
     short const taille = n*w;
     Matrice res(taille, taille);
-    Matrice E = matriceExtraction().bloc(0, 0, 8, w);
+    Matrice E = matriceExtraction().bloc(0, 0, w, 8);
 
-    for (short i=0; i<n; i++) res.coller(E, i*8, i*w, (i+1)*8, (i+1)*w);
+    for (short i=0; i<n; i++) res.coller(E, i*w, i*8, (i+1)*w, (i+1)*8);
 
     Matrice droite = Matrice::masque(intToChar(masqueDroit), w);
     Matrice gauche = Matrice::masque(intToChar(masqueGauche), w);
 
-    Matrice iSuivant(w, w*2);
+    Matrice iSuivant(w*2, w);
     iSuivant.coller(gauche, 0, 0, w, w);
-    iSuivant.coller(droite, 0, w, w, w*2);
+    iSuivant.coller(droite, w, 0, w*2, w);
 
     Matrice A(w, w);
-    A.coller(Matrice::id(w-1), 1, 0, w, w-1);
-    A.coller(Matrice(intToChar(a), w), 0, w-1, w, w);
+    A.coller(Matrice::id(w-1), 0, 1, w-1, w);
+    A.coller(Matrice(intToChar(a), w), w-1, 0, w, w);
 
-    iSuivant *= A;
-
+    iSuivant = A*iSuivant;
+    
     short const tailleSuivant1 = (m+1)*w;
-    Matrice suivant1(w, tailleSuivant1);
+    Matrice suivant1(tailleSuivant1, w);
     Matrice idW = Matrice::id(w);
 
-    suivant1.coller(iSuivant, 0, 0, w, w*2);
-    suivant1.coller(idW, 0, w*m, w, tailleSuivant1);
+    suivant1.coller(iSuivant, 0, 0, w*2, w);
+    suivant1.coller(idW, w*m, 0, tailleSuivant1, w);
 
+/*
     short const tailleSuivant2 = (n-m+2)*w;
-    Matrice suivant2(w, tailleSuivant2);
+    Matrice suivant2(tailleSuivant2, w);
 
     suivant2.coller(idW, 0, 0, w, w);
     suivant2.coller(iSuivant, 0, tailleSuivant2-w*2, w, tailleSuivant2);
+*/
 
-    Matrice suivant(w, taille);
-    //suivant.coller(suivant1, 0, w, w, tailleSuivant1+w);
-    suivant.coller(suivant2, 0, w, w, tailleSuivant2+w);
-    
+    Matrice suivant(taille, w);
+    suivant.coller(suivant1, w*7, 0, tailleSuivant1+w*7, w);
+    //suivant.coller(suivant2, 0, w, w, tailleSuivant2+w);
+
     Matrice h = suivant;
-
-    cout << (string)iSuivant << endl;
 
     return suivant;
 
@@ -350,32 +350,33 @@ void MercenneSlayer::tester()
     cout << "On recupere les 8 premiers bits : " << endl;
     printf("%x %x %x %x\n", mercenneSlayer.iExtraire(710524559L), mercenneSlayer.iExtraire(2078043453L), mercenneSlayer.intToW(102, 0, 255)[0], mercenneSlayer.intToW(102, 0, 255)[1]);
     printf("%x %x %x %x\n", mercenneSlayer.iExtraire(1742245849L), mercenneSlayer.iExtraire(688828953L), mercenneSlayer.intToW(231, 0, 255)[0], mercenneSlayer.intToW(231, 0, 255)[1]);
-    printf("%x %x %x %x\n", mercenneSlayer.iExtraire(17639039L), mercenneSlayer.iExtraire(1893008952L), mercenneSlayer.intToW(36, 0, 255)[0], mercenneSlayer.intToW(36, 0, 255)[1]);
+    printf("%x %x %x %x\n\n", mercenneSlayer.iExtraire(17639039L), mercenneSlayer.iExtraire(1893008952L), mercenneSlayer.intToW(36, 0, 255)[0], mercenneSlayer.intToW(36, 0, 255)[1]);
 
-    printf("%x %x\n", 710524559L, mercenneSlayer.iExtraire(710524559L));
+    printf("etat depart : %x\nextraction : %x\n", 2078043453L, mercenneSlayer.iExtraire(2078043453L));
 
 
     mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
 
     Matrice B = mercenneSlayer.matriceExtraction();
-    Matrice etat(intToChar(710524559L), 32);
+    Matrice etat(intToChar(2078043453L), 32);
 
-    cout << etat.hexa() << (etat*B).hexa() << endl;
-    cout << (string)B << endl;
+    cout << "etat matrice : " << etat.hexa() << "extraction matrice : " << (B*etat).hexa();
+
+    cout << "extraction inversee : " << B.inverser(B*etat).hexa() << endl;
+
+    //cout << (string)B << endl;
+    //cout << (string)B.bloc(0, 0, 32, 8) << endl;
+
+    Matrice E(32, 24);
+    E.coller(B.bloc(0, 0, 32, 8), 0, 3, 32, 3+8);
     
-    cout << (string)B.bloc(0, 0, 8, 32);
-    
-    Matrice E(24, 32);
-    E.coller(B.bloc(0, 0, 8, 32), 3, 0, 3+8, 32);
+    //cout << (string)E;
 
     Matrice etats(intToChars(mercenneSlayer.etats, 624), 624*32);
 
-printf("%x %x %x %x\n", mercenneSlayer.etats[0], mercenneSlayer.etats[1], mercenneSlayer.etats[622], mercenneSlayer.etats[623]);
-    cout << etats.hexa() << endl;
-    
     Matrice suivant = mercenneSlayer.matriceGeneraleRandint();
-    Matrice test = etats*suivant;
+    Matrice test = suivant*etats;
 
-    printf("%x\n", mercenneSlayer.etatSuivant(mercenneSlayer.etats, 1));
-    cout << test.hexa() << endl;
+    printf("etat suivant : %x\n", mercenneSlayer.etatSuivant(mercenneSlayer.etats, 7));
+    cout << "etat suivant matrice : " << test.hexa() << endl;
 }

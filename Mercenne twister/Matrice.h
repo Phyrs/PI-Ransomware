@@ -11,7 +11,7 @@ class Matrice
         Matrice();
         Matrice(short tx, short ty);
         Matrice(Matrice const &A);
-        Matrice(uint8_t const iElements[], short tx);
+        Matrice(uint8_t const iElements[], short tx);                          //Matrice colonne
         Matrice& operator=(Matrice const &A);
         void operator*=(Matrice const &A);
         void operator+=(Matrice const &A);
@@ -25,6 +25,7 @@ class Matrice
         operator string() const;
         Matrice transposee() const;
         uint8_t get(short x, short y) const;
+        Matrice inverser(Matrice const &iY) const;                  //Solution de X*A = iY
         Matrice operator*(Matrice const &A) const;
         Matrice operator+(Matrice const &A) const;
         Matrice bloc(short x1, short y1, short x2, short y2) const;

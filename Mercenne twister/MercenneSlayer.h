@@ -25,7 +25,6 @@ class MercenneSlayer
         W extraire();                            //Entier de W bits donne par l'etat actuel, utilise iExtraire
         ~MercenneSlayer();
 
-
         Matrice matriceExtraction() const;                  //Matrice w x w representant la fonction d'extraction
         W iExtraire(W nombreInitial) const;                 //Entier de w bits correspondant a l'etat nombreInitial
         double random(W etat1, W etat2) const;              //Resultat de random() de python en partant de deux etat
