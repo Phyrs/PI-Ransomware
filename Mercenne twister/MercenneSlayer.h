@@ -27,8 +27,8 @@ class MercenneSlayer
 
         Matrice matriceExtraction() const;                  //Matrice w x w representant la fonction d'extraction
         W iExtraire(W nombreInitial) const;                 //Entier de w bits correspondant a l'etat nombreInitial
+        Matrice matriceGeneraleCrypy() const;               //Matrice M (n*w) x (n*w) telle que : M*etatInterne = (IV generes par Crypy mis bout a bout)
         double random(W etat1, W etat2) const;              //Resultat de random() de python en partant de deux etat
-        Matrice matriceGeneraleRandint() const;             //Matrice M (n*w) x (n*w) telle que : etatInterne*M = (n*4 randint)
         W* doubleToW(double nombreAleatoire) const;         //53 bits des deux entiers de 32 bits utilises pour creer le flottant par random()
         W etatSuivant(W etats[], short nEtat) const;        //Fonction intermediaire utilisee par la fonction melanger
         W etatPrecedent(W etats[], short nEtat) const;      //Se mefier des cas m <= 1 (non etudie)

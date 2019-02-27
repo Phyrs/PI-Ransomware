@@ -16,9 +16,8 @@ Matrice::Matrice() : tx(1), ty(1), elements(new uint8_t*[1])
     elements[0] = new uint8_t[1];
 }
 
-Matrice::Matrice(Matrice const &A) : tx(1), ty(1), elements(new uint8_t*[1])
+Matrice::Matrice(Matrice const &A) : tx(0), ty(0)
 {
-    elements[0] = new uint8_t[1];
     *this = A;
 }
 
@@ -42,12 +41,71 @@ Matrice::Matrice(uint8_t const iElements[], short ty) : tx(1), ty(ty), elements(
     }
 }
 
+Matrice::Matrice(string path) : tx(0), ty(0)
+{
+    ifstream fMatrice;
+	fMatrice.open(path.c_str());
+	
+	if (!fMatrice)
+	{
+	    cerr << "Error while opening file " << path << endl;
+	    fMatrice.close();
+	    return;
+	}
+
+	fMatrice.seekg(0, ios::beg);
+	
+	char caractere;
+    while (fMatrice.get(caractere) && caractere != '\n') tx = tx*10+(caractere-'0');
+    while (fMatrice.get(caractere) && caractere != '\n') ty = ty*10+(caractere-'0');
+
+    long const iTx = (tx+7)/8;
+    long const debut = fMatrice.tellg();
+    long const tailleTheorique = ty*iTx;
+    
+    fMatrice.seekg(0, ios::end);
+    long const tailleFichier = fMatrice.tellg()-debut;
+    fMatrice.seekg(debut, ios::beg);
+
+    if (tailleFichier < tailleTheorique)
+    {
+        cerr << "fichier corrompu" << endl;
+        fMatrice.close();
+        ty = 0;
+        return;
+    }
+
+    elements = new uint8_t*[ty];
+
+    for (long y=0; y<ty; y++)
+    {
+        elements[y] = new uint8_t[iTx];
+
+        for (long x=0; x<iTx; x++)
+        {
+            if (!fMatrice.get(caractere))
+            {
+                ty = 0;
+                cout << "matrice corrompu, y : " << y << ", x : " << x << endl;
+                return;
+            }
+
+            elements[y][x] = static_cast<unsigned char>(caractere);
+        }
+    }
+
+    fMatrice.close();
+}
+
 Matrice& Matrice::operator=(Matrice const &A)
 {
     if (this == &A) return *this;
 
-    for (short y=0; y<ty; y++) delete[] elements[y];
-    delete[] elements;
+    if (ty)
+    {
+        for (short y=0; y<ty; y++) delete[] elements[y];
+        delete[] elements;
+    }
 
     tx = A.tx;
     ty = A.ty;
@@ -115,6 +173,11 @@ short Matrice::gTx() const
 short Matrice::gTy() const
 {
     return ty;
+}
+
+bool Matrice::isOk() const
+{
+    return (ty != 0);
 }
 
 Matrice Matrice::operator*(Matrice const &A) const
@@ -195,7 +258,9 @@ Matrice Matrice::transposee() const
 
 Matrice Matrice::inverser(Matrice const &iY) const
 {
-    int n = tx;
+    int const n = tx;
+    int const m = ty;
+
     Matrice Y = iY;
     Matrice X(1, n);
     Matrice matrice = *this;
@@ -207,9 +272,9 @@ Matrice Matrice::inverser(Matrice const &iY) const
         {
             //On trouve une ligne ou le coefficient est non nul
             int j;
-            for (j=i+1; j<n; j++)
+            for (j=0; j<m; j++)
             {
-                if (matrice.get(i, j))
+                if ((j >= i+1 || matrice.get(j, j) == 0) && matrice.get(i, j) && j != i)
                 {
                     //On inverse les lignes i et j
                     for (int k=0; k<n/8; k++)
@@ -225,13 +290,14 @@ Matrice Matrice::inverser(Matrice const &iY) const
                     break;
                 }
             }
-            if (j==n) continue;
-        }
 
-        //On annule la ieme variable dans toutes les lignes en-dessous
-        for (int j=i+1; j<n; j++)
+            if (j==m) continue;
+        }
+cout << i << endl;
+        //On annule la ieme variable dans toutes les lignes en-dessous (ou au-dessus si le coef diagonal est nul)
+        for (int j=0; j<m; j++)
         {
-            if (matrice.get(i, j))
+            if ((j >= i+1 || matrice.get(j, j) == 0) && matrice.get(i, j) && j != i)
             {
                 for (int k=0; k<n/8; k++) matrice.elements[j][k] ^= matrice.elements[i][k];
                 Y.elements[j][0] ^= Y.elements[i][0];
@@ -244,35 +310,56 @@ Matrice Matrice::inverser(Matrice const &iY) const
     int bitsNuls = 0;
     int bitsNonTrouves = 0;
     bool isBitNonTrouve[n];
-    for (int i=0; i<n; i++) isBitNonTrouve[i] = 0;
+    bool isBitInconnu[n];
+    
+    for (int i=0; i<n; i++)
+    {
+        isBitNonTrouve[i] = 0;
+        isBitInconnu[i] = 0;
+    }
 
-    //On resoud le systeme triangulaire
+    //On resoud le systeme triangulaire (les lignes [n, m[ sont redondantes) 
     for (int i=n-1; i>=0; i--)
     {
         if (matrice.get(i, i) == 0)
         {
-            cout << i << " ";
+            //cout << i << " ";
+            isBitInconnu[i] = 1;
             bitsNuls++;
         }
 
         X.elements[i][0] = Y.elements[i][0];
+
         for (int j=n-1; j>i; j--)
         {
-            if (X.elements[j][0])
-            {
-                if (matrice.get(j, j) == 0 && matrice.get(i, i) != 0 && isBitNonTrouve[i] == 0)
-                {
-                    cout << "_" << i << " ";
-                    bitsNonTrouves++;
-                    isBitNonTrouve[i] = 1;
-                }
+            if (X.elements[j][0] && matrice.get(j, i)) X.elements[i][0] ^= 0x80;
 
-                X.elements[i][0] ^= matrice.get(j, i) << 7;
+            if (isBitInconnu[i] == 0 && isBitInconnu[j] && matrice.get(j, i) && isBitNonTrouve[i] == 0)
+            {
+                bitsNonTrouves++;
+                isBitNonTrouve[i] = 1;
             }
         }
     }
 
-    cout << "erreur " << bitsNuls << " " << bitsNonTrouves << endl;
+    int nbProblemes = 0;
+    
+    for (int i=0; i<n; i++)
+    {
+        if (isBitInconnu[i] == 1)
+        {
+            for (int j=0; j<n; j++)
+            {
+                if (isBitInconnu[j] == 1 && matrice.get(j, i))
+                {
+                    nbProblemes++;
+                    break;
+                }
+            }
+        }
+    }
+
+    cout << "erreur " << bitsNuls << " " << bitsNonTrouves << " " << nbProblemes << endl;
     return X;
 }
 
@@ -312,6 +399,20 @@ string Matrice::hexa() const
     }
 }
 
+void Matrice::exporter(string path) const
+{
+    ofstream fMatrice;
+    fMatrice.open(path.c_str(), ios::binary);
+
+    long const iTx = (tx+7)/8;
+	fMatrice << tx << "\n" << ty << "\n";
+
+	for (long y=0; y<ty; y++) for (long x=0; x<iTx; x++) fMatrice << elements[y][x];
+	
+	fMatrice << EOF;
+	fMatrice.close();
+}
+
 Matrice::operator string() const
 {
     if (tx == 1 && ty > 1) return "t_"+static_cast<string>(transposee());
@@ -331,8 +432,11 @@ Matrice::operator string() const
 
 Matrice::~Matrice()
 {
-    for (short y=0; y<ty; y++) delete[] elements[y];
-    delete[] elements;
+    if (ty != 0)
+    {
+        for (short y=0; y<ty; y++) delete[] elements[y];
+        delete[] elements;
+    }
 }
 
 
