@@ -47,7 +47,7 @@ void MercenneSlayer::melanger()
 
 void MercenneSlayer::inverserMelange()
 {
-    for (short i=n-1; i>=0; i++) etats[i] = etatPrecedent(etats, i);
+    //Utiliser la matrice, cf crypy
     position = n;
 }
 
@@ -152,17 +152,15 @@ void MercenneSlayer::sEtats(W nombresAleatoires[])
 
 void MercenneSlayer::sEtats(double nombresAleatoires[])
 {
-    for (short i=0; i<n/2; i++)
-    {
-        W *wAleatoires = doubleToW(nombresAleatoires[i]);
-        etats[i*2] = wAleatoires[0];
-        etats[i*2+1] = wAleatoires[1];
-        delete[] wAleatoires;
-    }
+    //Meme principe que pour Crypy
+}
 
-    //brute force
-
-    position = n;
+void MercenneSlayer::sEtatSCrypy(uint8_t randints[])
+{
+    Matrice iEtats = matriceGeneraleCrypy().inverser(Matrice(randints, n*w)).transposee();
+    
+    for (short i=0; i<n; i+=4) etats[i/4] = (iEtats.get8(i, 0) << 24) | (iEtats.get8(i+1, 0) << 16) | (iEtats.get8(i+2, 0) << 8) | iEtats.get8(i+3, 0);
+    position = 0;
 }
 
 //https://en.wikipedia.org/wiki/Mersenne_Twister
@@ -174,38 +172,6 @@ W MercenneSlayer::etatSuivant(W etats[], short nEtat) const
     if (x%2) xA ^= a;
                                         
     return etats[(nEtat+m)%n] ^ xA;
-}
-
-
-W MercenneSlayer::etatPrecedent(W etats[], short nEtat) const 
-{/*
-    //On recupere la partie gauche de l'etat
-    W xA = etats[nEtat] ^ etats[(nEtat+m)%n];
-    W const droiteX = (etats[(nEtat+1)%n] & masqueDroit);
-
-    if ((droiteX >> 1)%2) xA ^= a;
-
-    W const gaucheEtat = (xA << 1) & masqueGauche;
-
-    //On recupere la partie droite de l'etat
-    //W const dernierBitEtat = (~etats[(nEtat+n-m)%n]) & 1;
-
-    W const etatAv = etats[(nEtats+n-1)%n];
-    W xAAv = etatAv ^ etats[(nEtat-1+m)%n];
-
-    if (bitImportantEtat) xAAv ^= a;
-    
-    
-    W const droiteXAv = (etats[nEtat%n] & masqueDroit);
-    
-    if ((droiteXAv >> 1)%2) xA ^= a;
-    
-    W const gaucheEtat = (xA << 1) & masqueGauche;
-
-    W res = gaucheEtat | droiteEtat;
-
-    return res;*/
-    return 0;
 }
 
 //https://github.com/python/cpython/blob/master/Modules/_randommodule.c
@@ -231,6 +197,11 @@ Matrice MercenneSlayer::matriceExtraction() const
 
 Matrice MercenneSlayer::matriceGeneraleCrypy() const
 {
+    Matrice matriceCrypy("matriceCrypy.ms");
+    if (matriceCrypy.isOk()) return matriceCrypy;
+
+    cout << "So we need to rebuild it" << endl;
+
     //On construit la premiere partie de la matrice
     cout << "Creation de la matrice en cours : 0%" << endl;
 
@@ -238,12 +209,12 @@ Matrice MercenneSlayer::matriceGeneraleCrypy() const
     Matrice res(taille, taille);
     Matrice E = matriceExtraction().bloc(0, 0, w, 8);
 
-    for (short i=0; i<n/96; i++)
+    for (short i=0; i<n/168; i++)
     {
         for (short j=0; j<16; j++)
         {
             short const nEquation = (i*16+j)*8;
-            short const nEtat = (i*96+64+j*2)*w;
+            short const nEtat = (i*168+136+j*2)*w;
             res.coller(E, nEtat, nEquation, nEtat+w, nEquation+8);
         }
     }
@@ -269,15 +240,15 @@ Matrice MercenneSlayer::matriceGeneraleCrypy() const
     suivant1.coller(iSuivant, 0, 0, w*2, w);
     suivant1.coller(idW, w*m, 0, txSuivant1, w);
 
-    Matrice suivants[n*4/16*96];
+    Matrice suivants[n*4/16*168];
 
     for (short i=0; i<n-m; i++)
     {
         suivants[i] = Matrice(taille, w);
         suivants[i].coller(suivant1, i*w, 0, i*w+txSuivant1, w);
     }
-    
-    cout << "Creation de la matrice en cours : 4%" << endl;
+
+    cout << "Creation de la matrice en cours : 2%" << endl;
 
     for (short i=n-m; i<n-1; i++)
     {
@@ -289,15 +260,15 @@ Matrice MercenneSlayer::matriceGeneraleCrypy() const
         suivants[i] += coucheActuelle;
     }
 
-    cout << "Creation de la matrice en cours : 8%" << endl;
+    cout << "Creation de la matrice en cours : 4%" << endl;
 
     suivants[n-1] = suivants[m-1];
     suivants[n-1].coller(A*gauche, taille-w, 0, taille, w);
     suivants[n-1] += A*(droite*suivants[0]);
 
-    for (short i=n; i<n*4/16*96; i++)
+    for (short i=n; i<n*4/16*168; i++)
     {
-        if (i%50 == 0) cout << "Creation de la matrice en cours : " << 100.0*(i+n)/(n*4/16*96) << "%" << endl;
+        if (i%50 == 0) cout << "Creation de la matrice en cours : " << 100.0*(i+n)/(n*4/16*168) << "%" << endl;
 
         suivants[i] = A*(gauche*suivants[i-n]+droite*suivants[i+1-n]) + suivants[i-n+m];
     }
@@ -305,16 +276,17 @@ Matrice MercenneSlayer::matriceGeneraleCrypy() const
     //On assemble les morceaux selon l'utilisation de randint par crypy : 32o cle - 16o IV - 32o cle - ... 
     cout << "Creation de la matrice en cours : assemblage" << endl;
 
-    for (short i=n/96; i<n*4/16; i++)
+    for (short i=n/168; i<n*4/16; i++)
     {
         for (short j=0; j<16; j++)
         {
-            short const nEtat = i*96-n+64+j*2;
+            short const nEtat = i*168-n+136+j*2;
             short const nEquation = (i*16+j)*8;
             res.coller(E*suivants[nEtat], 0, nEquation, taille, nEquation+8);
         }
     }
 
+    res.exporter("matriceCrypy");
     cout << "Creation de la matrice terminee" << endl;
 
     return res;
@@ -413,23 +385,17 @@ void MercenneSlayer::tester()
     mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
 
     uint8_t randints[624*4]; //Suite des ivs generes par CryPy
-    
+
     for (short i=0; i<624*4/16; i++)
     {
-        for (short j=0; j<32; j++) mercenneSlayer.randint(0, 255);
+        for (short j=0; j<32+36; j++) mercenneSlayer.randint(0, 255);
         for (short j=0; j<16; j++) randints[i*16+j] = mercenneSlayer.randint(0, 255);
     }
- 
+
     cout << "randint" << endl << Matrice(randints, 624*32).hexa() << endl;
     cout << "etats" << endl << etats.hexa() << endl;
 
-    Matrice matriceCrypy("matriceCrypy");
-    if (!matriceCrypy.isOk())
-    {
-        cout << "So we need to rebuild it" << endl;
-        matriceCrypy = mercenneSlayer.matriceGeneraleCrypy();
-        matriceCrypy.exporter("matriceCrypy");
-    }
+    Matrice matriceCrypy = mercenneSlayer.matriceGeneraleCrypy();
 
     Matrice randintsMatrice = (matriceCrypy*etats);
     Matrice randintsMatriceT = randintsMatrice.transposee();

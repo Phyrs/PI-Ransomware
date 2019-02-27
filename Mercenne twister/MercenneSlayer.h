@@ -14,6 +14,7 @@ class MercenneSlayer
     public:
         MercenneSlayer(short w, short n, short m, short r, W a, short u, W d, short s, W b, short t, W c, short l);
         void sEtats(double nombresAleatoires[]);
+        void sEtatSCrypy(uint8_t randints[]);
         void sEtatsSEtats(string pathEtats);
         void sEtats(W nombresAleatoires[]);      //Utilise n nombre generees par Mercenne twister pour determiner notre etat interne
         int randint(int a, int b);
@@ -31,7 +32,6 @@ class MercenneSlayer
         double random(W etat1, W etat2) const;              //Resultat de random() de python en partant de deux etat
         W* doubleToW(double nombreAleatoire) const;         //53 bits des deux entiers de 32 bits utilises pour creer le flottant par random()
         W etatSuivant(W etats[], short nEtat) const;        //Fonction intermediaire utilisee par la fonction melanger
-        W etatPrecedent(W etats[], short nEtat) const;      //Se mefier des cas m <= 1 (non etudie)
         W inverserExtraction(W nombreAleatoire) const;      //Ieme etat utilise pour creer l'entier de w bits
         int randint(W etat1, W etat2, int a, int b) const;
         W* intToW(int nombreAleatoire, int a, int b) const;

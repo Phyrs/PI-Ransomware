@@ -293,7 +293,7 @@ Matrice Matrice::inverser(Matrice const &iY) const
 
             if (j==m) continue;
         }
-cout << i << endl;
+
         //On annule la ieme variable dans toutes les lignes en-dessous (ou au-dessus si le coef diagonal est nul)
         for (int j=0; j<m; j++)
         {
@@ -303,6 +303,8 @@ cout << i << endl;
                 Y.elements[j][0] ^= Y.elements[i][0];
             }
         }
+        
+        if (i%400 == 0) cout << "Inversion : " << 100.0*i/n << "%" << endl;
     }
 
     cout << "bits non trouves :" << endl;
