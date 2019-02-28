@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: wstool
+Version: 0.1.17
+Summary: workspace multi-SCM commands
+Home-page: http://wiki.ros.org/wstool
+Author: Tully Foote
+Author-email: tfoote@osrfoundation.org
+License: BSD
+Download-URL: http://download.ros.org/downloads/wstool/
+Description: A tool for managing a workspace of multiple heterogenous SCM repositories
+        
+Keywords: ROS
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: BSD License

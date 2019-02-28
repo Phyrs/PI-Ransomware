@@ -1,0 +1,1 @@
+../../../../../share/pyshared/pysideuic/Compiler/misc.py

@@ -58,3 +58,20 @@ for i in range(624*4/16):
 print(crypyPython[90*2:90*2+50])
 print(crypyMatrice[90*2:90*2+50])
 
+
+bits = []
+for i in range(624*4/16*168):
+    bits.append(0)
+bits[0] = 1
+
+bits1 = []
+
+for i in range(623, 624*4/16*168):
+    bits[i] = bits[i+1-624]+bits[i+397-624]
+    
+for i in range(624*4/16):
+    for j in range(16):
+        nEtat = i*168+136+j*2
+        bits1.append(bits[nEtat])
+
+print(bits1)

@@ -1,0 +1,1 @@
+../../../../share/pyshared/pysideuic/icon_cache.py

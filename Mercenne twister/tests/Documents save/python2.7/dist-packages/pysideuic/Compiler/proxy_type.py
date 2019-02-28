@@ -1,0 +1,1 @@
+../../../../../share/pyshared/pysideuic/Compiler/proxy_type.py

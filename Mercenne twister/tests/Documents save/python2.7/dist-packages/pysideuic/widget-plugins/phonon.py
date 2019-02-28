@@ -1,0 +1,1 @@
+../../../../../share/pyshared/pysideuic/widget-plugins/phonon.py

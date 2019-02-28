@@ -1,0 +1,1 @@
+../../../../../share/pyshared/pysideuic/port_v2/ascii_upper.py

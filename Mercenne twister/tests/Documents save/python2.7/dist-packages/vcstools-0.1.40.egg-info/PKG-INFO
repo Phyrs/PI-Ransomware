@@ -1,0 +1,18 @@
+Metadata-Version: 1.1
+Name: vcstools
+Version: 0.1.40
+Summary: VCS/SCM source control library for svn, git, hg, and bzr
+Home-page: http://wiki.ros.org/vcstools
+Author: Tully Foote, Thibault Kruse, Ken Conley
+Author-email: tfoote@osrfoundation.org
+License: BSD
+Download-URL: http://download.ros.org/downloads/vcstools/
+Description: Library for managing source code trees from multiple version control systems.
+        Current supports svn, git, hg, and bzr.
+        
+Keywords: scm,vcs,git,svn,hg,bzr
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: BSD License

@@ -1,0 +1,1 @@
+../../../../share/pyshared/pysideuic/exceptions.py

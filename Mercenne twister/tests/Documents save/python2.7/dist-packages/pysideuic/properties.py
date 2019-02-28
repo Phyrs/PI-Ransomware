@@ -1,0 +1,1 @@
+../../../../share/pyshared/pysideuic/properties.py

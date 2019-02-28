@@ -32,7 +32,7 @@ class Matrice
         Matrice transposee() const;
         void exporter(string path) const;
         uint8_t get(short x, short y) const;
-        uint8_t get8(short x, short y) const;
+        uint8_t get8(short x, short y) const;                       //Octet en position (y, x*8)
         Matrice inverser(Matrice const &iY) const;                  //Solution de X*A = iY
         Matrice bloc(short x1, short y1, short x2, short y2) const;
 

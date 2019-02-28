@@ -1,0 +1,12 @@
+#Pin download site
+set(PIN_DOWNLOAD_URL http://software.intel.com/sites/landingpage/pintool/downloads)
+
+#Pin versions
+set(PIN_VERSION_MSVC pin-2.13-62732-msvc10-windows)
+set(PIN_FILE_MSVC ${PIN_VERSION_MSVC}.zip)
+set(PIN_FILE_MD5SUM_MSVC 171ae71979ec336eb0cc6786dfe657d0)
+
+set(PIN_VERSION_LINUX pin-2.13-62732-gcc.4.4.7-linux)
+set(PIN_FILE_LINUX ${PIN_VERSION_LINUX}.tar.gz)
+set(PIN_FILE_MD5SUM_LINUX d643ce8339a31cf858e141a612b18c5c)
+

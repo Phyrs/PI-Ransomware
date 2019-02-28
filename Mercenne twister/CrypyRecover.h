@@ -10,14 +10,20 @@ class CrypyRecover
 {
     public:
         CrypyRecover(string pathRacine);
-        void decipher(string path) const;
+        void recupererIv(string path, uint8_t iv[]) const;
+
+        string gKey();
+        void decipher(string pathRacine);
+        void decipher(string pathFile, string key);
 
         static void tester();
 
     private:
-        string extensions[274];
+        string extensions[285];
         MercenneSlayer mercenneSlayer;
 };
 
 
 #endif //CRYPY_RECOVER_H
+
+//http://dfir.pro/index.php?link_id=69055

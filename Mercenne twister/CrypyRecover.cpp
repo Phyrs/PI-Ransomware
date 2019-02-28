@@ -1,3 +1,6 @@
+#include "utile.h"
+#include <iostream>
+#include "Matrice.h"
 #include "CrypyRecover.h"
 
 CrypyRecover::CrypyRecover(string pathRacine)
@@ -15,24 +18,83 @@ CrypyRecover::CrypyRecover(string pathRacine)
               "hwp", "dotm", "dotx", "docm", "DOT", "max", "xml", "uot", "stw", "sxw", "ott", "csr", "key"}),
    mercenneSlayer(32, 624, 397, 31, 0x9908B0DF, 11, 0xFFFFFFFF, 7, 0x9D2C5680, 15, 0xEFC60000, 18)
 {
+    stack<string> elements = fichiersEtDossiersDans(pathRacine);
+
     uint8_t randints[624*4];
 
+    MercenneSlayer::tester();
+
+    for (short i=0; i<624*4/16; i++)
+    {
+        if (elements.empty())
+        {
+            cout << "Pas assez de fichiers chiffres" << endl;
+            return;
+        }
+
+        recupererIv(elements.top(), randints+i*16);
+        elements.pop();
+    }
+
+    Matrice truc(randints, 624*32);
+
+    cout << endl << truc.hexa() << endl;
+
     mercenneSlayer.sEtatSCrypy(randints);
+    //mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
+
+    cout << gKey() << endl;
+    cout << gKey() << endl;
+    cout << gKey() << endl;
+    cout << gKey() << endl;
+    cout << gKey() << endl;
+    cout << gKey() << endl;
 }
 
-void CrypyRecover::decipher(string pathRacine) const
+void CrypyRecover::recupererIv(string path, uint8_t iv[]) const
+{
+    ifstream fichier;
+	fichier.open(path.c_str(), ios::binary);
+
+	if (!fichier)
+	{
+	    cerr << "Error while opening file " << path << endl;
+	    fichier.close();
+	    return;
+	}
+
+	fichier.seekg(8, ios::beg);
+
+	char iIv[17];
+	fichier.read(iIv, 17);
+	for (short i=0; i<16; i++) iv[i] = iIv[i];
+}
+
+void CrypyRecover::decipher(string pathRacine)
 {
     string path = pathRacine;
 
     while (1)
     {
-        decipher(path, mercenneSlayer.gKeyCrypy());
+        decipher(path, gKey());
     }
 }
 
-void CrypyRecover::decipher(string pathFile, const char key[16]) const
+void CrypyRecover::decipher(string pathFile, string key)
 {
 
+}
+
+string CrypyRecover::gKey()
+{
+    static char const caracteres[62] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F',
+                                        'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+    string res = "";
+    for (short i=0; i<32; i++) res += mercenneSlayer.choice(caracteres, 62);
+    for (short i=0; i<52; i++) mercenneSlayer.randint(0, 255);
+
+    return res;
 }
 
 
