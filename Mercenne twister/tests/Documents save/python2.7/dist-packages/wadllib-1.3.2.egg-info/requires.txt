@@ -1,5 +1,0 @@
-lazr.uri
-
-[docs]
-Sphinx
-z3c.recipe.sphinxdoc

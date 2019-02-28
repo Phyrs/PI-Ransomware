@@ -1,1 +1,0 @@
-../../../../../share/pyshared/pysideuic/Compiler/__init__.py

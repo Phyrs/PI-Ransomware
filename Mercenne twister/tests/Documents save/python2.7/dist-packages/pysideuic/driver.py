@@ -1,1 +1,0 @@
-../../../../share/pyshared/pysideuic/driver.py

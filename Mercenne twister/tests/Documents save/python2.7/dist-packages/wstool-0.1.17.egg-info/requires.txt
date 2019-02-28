@@ -1,2 +1,0 @@
-vcstools>=0.1.38
-pyyaml

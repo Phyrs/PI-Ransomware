@@ -1,8 +1,0 @@
-
-[test]
-pytest>=2.8
-gdata
-python-keyczar
-fs>=0.5
-mock
-pycrypto

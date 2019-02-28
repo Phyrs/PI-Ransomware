@@ -1,1 +1,0 @@
-../../../../../share/pyshared/pysideuic/port_v2/string_io.py
