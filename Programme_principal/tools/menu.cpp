@@ -29,11 +29,12 @@ void printChoiceMenu(){
 	printf("Please choose an option (enter 1 or 2) :\n");
 	printf(" 1 - Analyze Disk\n");
 	printf(" 2 - Analyze Pcap file\n");
-	printf(" 3 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.)\n", cipheredFileName.c_str());
+	printf(" 3 - Try to bruteforce HiddenTear (Requires a plain/ciphered pair)\n");
+	printf(" 4 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.)\n", cipheredFileName.c_str());
 }
 
 short getUserChoice(){
-	short choice;
+	int choice;
 	cin >> choice;
 	if(cin.fail()){
 		cin.clear();

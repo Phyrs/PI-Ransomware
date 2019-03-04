@@ -8,11 +8,15 @@ class HiddenTearRecoverer
 {
     public:
         HiddenTearRecoverer(string pass);
+		HiddenTearRecoverer(string pl, string ciph, int sec);
         void decipher(string path) const;
+		void bruteforce();
 
     private:
-        string password;
+        string password, plain, ciphered;
+		int seconds_bruteforce;
 		static const char *EXE_PATH;
+		static const char *EXE_PATH2;
 };
 
 #endif
