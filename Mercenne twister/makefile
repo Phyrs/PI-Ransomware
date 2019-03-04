@@ -1,9 +1,9 @@
 CC = g++
 CFLAGS = -Wall
 EXEC_NAME = mercenne
-INCLUDES =
-LIBS =
-OBJ_FILES = main.o MercenneSlayer.o Matrice.o
+INCLUDES = -Lcryptopp
+LIBS = -lcryptopp
+OBJ_FILES = main.o CrypyRecover.o MercenneSlayer.o Matrice.o utile.o
 
 all : $(EXEC_NAME)
 

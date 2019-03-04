@@ -10,15 +10,19 @@ class CrypyRecover
 {
     public:
         CrypyRecover(string pathRacine);
-        void recupererIv(string path, uint8_t iv[]) const;
+        string generateKey();
+        ~CrypyRecover();
 
-        string gKey();
-        void decipher(string pathRacine);
-        void decipher(string pathFile, string key);
+        void decipher(string path) const;
+        void recupererIv(string path, uint8_t iv[]) const;
 
         static void tester();
 
     private:
+        string *keys;
+        long nbFichiers;
+        string *fichiers;
+        string pathDechiffre;
         string extensions[285];
         MercenneSlayer mercenneSlayer;
 };

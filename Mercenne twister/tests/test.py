@@ -60,18 +60,30 @@ print(crypyMatrice[90*2:90*2+50])
 
 
 bits = []
-for i in range(624*4/16*168):
+for i in range(624*4/16*168*31):
     bits.append(0)
-bits[0] = 1
+
+for i in range(31):
+    bits[i] = 1 << i
+
+for i in range(624, 624*4/16*168):
+    for j in range(30):
+        bits[i*31+j] = bits[(i+1-624)*31+j+1] ^ bits[(i+397-624)*31+j]
+    bits[i*31+30] = bits[(i+397-624)*31+30]
 
 bits1 = []
 
-for i in range(623, 624*4/16*168):
-    bits[i] = bits[i+1-624]+bits[i+397-624]
-    
+
+
 for i in range(624*4/16):
     for j in range(16):
-        nEtat = i*168+136+j*2
-        bits1.append(bits[nEtat])
+        isOk = False
+        for k in range(31):
+            if (bits[(i*168+136+j*2)*31+k] != 0):
+                isOk = True
+    if (isOk):
+        bits1.append(i)
 
-print(bits1)
+x = 624
+print(bits[x*31:x*31+50])
+

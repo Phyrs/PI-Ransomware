@@ -26,6 +26,9 @@ class MercenneSlayer
         W extraire();                            //Entier de W bits donne par l'etat actuel, utilise iExtraire
         ~MercenneSlayer();
 
+        template<typename T>
+        T choice(T tableau[], int tailleTableau);
+
         Matrice matriceExtraction() const;                  //Matrice w x w representant la fonction d'extraction
         W iExtraire(W nombreInitial) const;                 //Entier de w bits correspondant a l'etat nombreInitial
         Matrice matriceGeneraleCrypy() const;               //Matrice M (n*w) x (n*w) telle que : M*etatInterne = (IV generes par Crypy mis bout a bout)
@@ -57,6 +60,7 @@ class MercenneSlayer
         short position;
 };
 
+
 template<typename T>
 T inverserGauche(T x, T masque, short decalage)
 {
@@ -81,6 +85,12 @@ T inverserDroite(T x, T masque, short decalage)
     }
     
     return x;
+}
+
+template<typename T>
+T MercenneSlayer::choice(T tableau[], int tailleTableau)
+{
+    return tableau[static_cast<int>(random()*tailleTableau)];
 }
 
 #endif //MERCENNE_SLAYER_H

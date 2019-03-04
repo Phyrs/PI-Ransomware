@@ -256,6 +256,7 @@ Matrice Matrice::transposee() const
     return res;
 }
 
+
 Matrice Matrice::inverser(Matrice const &iY) const
 {
     int const n = tx;
@@ -325,7 +326,7 @@ Matrice Matrice::inverser(Matrice const &iY) const
     {
         if (matrice.get(i, i) == 0)
         {
-            //cout << i << " ";
+            cout << i << " ";
             isBitInconnu[i] = 1;
             bitsNuls++;
         }
