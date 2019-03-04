@@ -1,0 +1,25 @@
+﻿La génération a démarré 14/01/2019 12:36:46.
+Projet "C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\PIN_TARGET.vcxproj" sur le nœud 2 (build cible(s)).
+InitializeBuildStatus:
+  Création de "PIN_TARGET.dir\Release\PIN_TARGET.unsuccessfulbuild", car "AlwaysCreate" a été spécifié.
+CustomBuild:
+  Toutes les sorties sont à jour.
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"\pin-2.13-62732-msvc10-windows\source\include\pin" /I"\pin-2.13-62732-msvc10-windows\source\include\pin\gen" /I"\pin-2.13-62732-msvc10-windows\source\tools\InstLib" /I"\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include" /I"\pin-2.13-62732-msvc10-windows\extras\components\include" /nologo /W1 /WX- /Ox /Ob2 /Ot /Oy- /GL /D TARGET_WINDOWS /D BIGARRAY_MULTIPLIER=1 /D USING_XED /D _CRT_SECURE_NO_DEPRECATE /D _SECURE_SCL=0 /D _WINDLL /D _MBCS /D TARGET_IA32 /D HOST_IA32 /D "CMAKE_INTDIR=\"Release\"" /D PIN_TARGET_EXPORTS /D _WINDLL /D _MBCS /Gm- /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"PIN_TARGET.dir\Release\\" /Fd"PIN_TARGET.dir\Release\vc100.pdb" /Gd /TP /wd4530 /analyze- /errorReport:queue Exemple1.cpp
+  Exemple1.cpp
+Link:
+  C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\Release\PintoolExemple1.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:"/pin-2.13-62732-msvc10-windows/ia32/lib" /LIBPATH:"/pin-2.13-62732-msvc10-windows/ia32/lib/Release" /LIBPATH:"/pin-2.13-62732-msvc10-windows/ia32/lib-ext" /LIBPATH:"/pin-2.13-62732-msvc10-windows/ia32/lib-ext/Release" /LIBPATH:"/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib" /LIBPATH:"/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib/Release" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib pin.lib libxed.lib libcpmt.lib libcmt.lib pinvm.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib psapi.lib "ntdll-32.lib" /NODEFAULTLIB /MANIFEST /ManifestFile:"PIN_TARGET.dir\Release\PintoolExemple1.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/Release/PintoolExemple1.pdb" /SUBSYSTEM:CONSOLE /STACK:"10000000" /OPT:REF /LTCG /TLBID:1 /ENTRY:"Ptrace_DllMainCRTStartup@12" /BASE:"0x55000000" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/Release/PintoolExemple1.lib" /MACHINE:X86 /DLL PIN_TARGET.dir\Release\Exemple1.obj  /EXPORT:main /TLBID:1 /MACHINE:x86 
+     Création de la bibliothèque C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/Release/PintoolExemple1.lib et de l'objet C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/Release/PintoolExemple1.exp
+  Génération de code en cours
+  Fin de la génération du code
+  PIN_TARGET.vcxproj -> C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\Release\PintoolExemple1.dll
+Manifest:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\Release\PintoolExemple1.dll;#2" /manifest PIN_TARGET.dir\Release\PintoolExemple1.dll.intermediate.manifest
+FinalizeBuildStatus:
+  Suppression du fichier "PIN_TARGET.dir\Release\PIN_TARGET.unsuccessfulbuild".
+  Mise à jour de l'horodatage "PIN_TARGET.dir\Release\PIN_TARGET.lastbuildstate".
+Génération du projet "C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\PIN_TARGET.vcxproj" terminée (build cible(s)).
+
+La génération a réussi.
+
+Temps écoulé 00:00:01.93

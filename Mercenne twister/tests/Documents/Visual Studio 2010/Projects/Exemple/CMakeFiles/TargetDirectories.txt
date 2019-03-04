@@ -1,0 +1,3 @@
+C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/CMakeFiles/ALL_BUILD.dir
+C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/src/CMakeFiles/PIN_TARGET.dir
+C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/CMakeFiles/ZERO_CHECK.dir

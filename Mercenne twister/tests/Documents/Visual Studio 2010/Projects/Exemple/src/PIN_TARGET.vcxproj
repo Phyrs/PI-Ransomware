@@ -1,0 +1,409 @@
+﻿<?xml version="1.0" encoding="Windows-1252"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{26C88045-68B8-4AB8-91B6-08B70AB51E9F}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>PIN_TARGET</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PIN_TARGET.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionName)</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PIN_TARGET.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionName)</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">PIN_TARGET.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(SolutionName)</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">PIN_TARGET.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(SolutionName)</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <EnablePREfast>false</EnablePREfast>
+      <ErrorReporting>Queue</ErrorReporting>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MinimalRebuild>false</MinimalRebuild>
+      <OmitFramePointers>false</OmitFramePointers>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <WarningLevel>Level1</WarningLevel>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>_DEBUG;TARGET_WINDOWS;BIGARRAY_MULTIPLIER=1;USING_XED;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_WINDLL;_MBCS;TARGET_IA32;HOST_IA32;CMAKE_INTDIR="Debug";PIN_TARGET_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;TARGET_WINDOWS;BIGARRAY_MULTIPLIER=1;USING_XED;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_WINDLL;_MBCS;TARGET_IA32;HOST_IA32;CMAKE_INTDIR=\"Debug\";PIN_TARGET_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /EXPORT:main /TLBID:1 /MACHINE:x86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;pin.lib;libxed.lib;libcpmt.lib;libcmt.lib;pinvm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;psapi.lib;ntdll-32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>/pin-2.13-62732-msvc10-windows/ia32/lib;/pin-2.13-62732-msvc10-windows/ia32/lib/$(Configuration);;/pin-2.13-62732-msvc10-windows/ia32/lib-ext;/pin-2.13-62732-msvc10-windows/ia32/lib-ext/$(Configuration);;/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib;/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <BaseAddress>0x55000000</BaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <EntryPointSymbol>Ptrace_DllMainCRTStartup@12</EntryPointSymbol>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <ImportLibrary>C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/Debug/$(SolutionName).lib</ImportLibrary>
+      <LinkDLL>true</LinkDLL>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ProgramDataBaseFile>C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/Debug/$(SolutionName).pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <EnablePREfast>false</EnablePREfast>
+      <ErrorReporting>Queue</ErrorReporting>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MinimalRebuild>false</MinimalRebuild>
+      <OmitFramePointers>false</OmitFramePointers>
+      <Optimization>Full</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <WarningLevel>Level1</WarningLevel>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>TARGET_WINDOWS;BIGARRAY_MULTIPLIER=1;USING_XED;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_WINDLL;_MBCS;TARGET_IA32;HOST_IA32;CMAKE_INTDIR="Release";PIN_TARGET_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>TARGET_WINDOWS;BIGARRAY_MULTIPLIER=1;USING_XED;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_WINDLL;_MBCS;TARGET_IA32;HOST_IA32;CMAKE_INTDIR=\"Release\";PIN_TARGET_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /EXPORT:main /TLBID:1 /MACHINE:x86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;pin.lib;libxed.lib;libcpmt.lib;libcmt.lib;pinvm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;psapi.lib;ntdll-32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>/pin-2.13-62732-msvc10-windows/ia32/lib;/pin-2.13-62732-msvc10-windows/ia32/lib/$(Configuration);;/pin-2.13-62732-msvc10-windows/ia32/lib-ext;/pin-2.13-62732-msvc10-windows/ia32/lib-ext/$(Configuration);;/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib;/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <BaseAddress>0x55000000</BaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <EntryPointSymbol>Ptrace_DllMainCRTStartup@12</EntryPointSymbol>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <ImportLibrary>C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/Release/$(SolutionName).lib</ImportLibrary>
+      <LinkDLL>true</LinkDLL>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ProgramDataBaseFile>C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/Release/$(SolutionName).pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <EnablePREfast>false</EnablePREfast>
+      <ErrorReporting>Queue</ErrorReporting>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild>false</MinimalRebuild>
+      <OmitFramePointers>false</OmitFramePointers>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <WarningLevel>Level1</WarningLevel>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>NDEBUG;TARGET_WINDOWS;BIGARRAY_MULTIPLIER=1;USING_XED;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_WINDLL;_MBCS;TARGET_IA32;HOST_IA32;CMAKE_INTDIR="MinSizeRel";PIN_TARGET_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;TARGET_WINDOWS;BIGARRAY_MULTIPLIER=1;USING_XED;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_WINDLL;_MBCS;TARGET_IA32;HOST_IA32;CMAKE_INTDIR=\"MinSizeRel\";PIN_TARGET_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /EXPORT:main /TLBID:1 /MACHINE:x86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;pin.lib;libxed.lib;libcpmt.lib;libcmt.lib;pinvm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;psapi.lib;ntdll-32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>/pin-2.13-62732-msvc10-windows/ia32/lib;/pin-2.13-62732-msvc10-windows/ia32/lib/$(Configuration);;/pin-2.13-62732-msvc10-windows/ia32/lib-ext;/pin-2.13-62732-msvc10-windows/ia32/lib-ext/$(Configuration);;/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib;/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <BaseAddress>0x55000000</BaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <EntryPointSymbol>Ptrace_DllMainCRTStartup@12</EntryPointSymbol>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <ImportLibrary>C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/MinSizeRel/$(SolutionName).lib</ImportLibrary>
+      <LinkDLL>true</LinkDLL>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ProgramDataBaseFile>C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/MinSizeRel/$(SolutionName).pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
+      <EnablePREfast>false</EnablePREfast>
+      <ErrorReporting>Queue</ErrorReporting>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild>false</MinimalRebuild>
+      <OmitFramePointers>false</OmitFramePointers>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <WarningLevel>Level1</WarningLevel>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>NDEBUG;TARGET_WINDOWS;BIGARRAY_MULTIPLIER=1;USING_XED;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_WINDLL;_MBCS;TARGET_IA32;HOST_IA32;CMAKE_INTDIR="RelWithDebInfo";PIN_TARGET_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;TARGET_WINDOWS;BIGARRAY_MULTIPLIER=1;USING_XED;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_WINDLL;_MBCS;TARGET_IA32;HOST_IA32;CMAKE_INTDIR=\"RelWithDebInfo\";PIN_TARGET_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>\pin-2.13-62732-msvc10-windows\source\include\pin;\pin-2.13-62732-msvc10-windows\source\include\pin\gen;\pin-2.13-62732-msvc10-windows\source\tools\InstLib;\pin-2.13-62732-msvc10-windows\extras\xed2-ia32\include;\pin-2.13-62732-msvc10-windows\extras\components\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /EXPORT:main /TLBID:1 /MACHINE:x86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;pin.lib;libxed.lib;libcpmt.lib;libcmt.lib;pinvm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;psapi.lib;ntdll-32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>/pin-2.13-62732-msvc10-windows/ia32/lib;/pin-2.13-62732-msvc10-windows/ia32/lib/$(Configuration);;/pin-2.13-62732-msvc10-windows/ia32/lib-ext;/pin-2.13-62732-msvc10-windows/ia32/lib-ext/$(Configuration);;/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib;/pin-2.13-62732-msvc10-windows/extras/xed2-ia32/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <BaseAddress>0x55000000</BaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <EntryPointSymbol>Ptrace_DllMainCRTStartup@12</EntryPointSymbol>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <ImportLibrary>C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/RelWithDebInfo/$(SolutionName).lib</ImportLibrary>
+      <LinkDLL>true</LinkDLL>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ProgramDataBaseFile>C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/RelWithDebInfo/$(SolutionName).pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-HC:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple" "-BC:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple" --check-stamp-file "C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/src/CMakeLists.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeLists.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\Pin_sdk_version.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-HC:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple" "-BC:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple" --check-stamp-file "C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/src/CMakeLists.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeLists.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\Pin_sdk_version.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-HC:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple" "-BC:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple" --check-stamp-file "C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/src/CMakeLists.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeLists.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\Pin_sdk_version.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-HC:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple" "-BC:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple" --check-stamp-file "C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/src/CMakeLists.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeLists.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\Pin_sdk_version.txt;C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Documents and Settings\Administrateur\Mes documents\Visual Studio 2010\Projects\Exemple\src\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Exemple1.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:/Documents and Settings/Administrateur/Mes documents/Visual Studio 2010/Projects/Exemple/ZERO_CHECK.vcxproj">
+      <Project>721C9D61-0E37-4341-BCE5-7D1E7710C4CD</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
