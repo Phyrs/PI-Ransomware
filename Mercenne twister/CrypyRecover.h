@@ -27,7 +27,9 @@ class CrypyRecover
         int tailleCle;
         int nbBitsNom;
         long nbFichiers;
+        int nbBitsEtatIV;
         string *fichiers;
+        int nbBitsEtatNom;
         int tailleExtension;
         string pathDechiffre;
         string extensions[285];

@@ -207,7 +207,7 @@ Matrice Matrice::operator*(Matrice const &A) const
 
             }
         }
-        if (y%100 == 0) cout << y << endl;
+        //if (y%100 == 0) cout << y << endl;
     }
 
     return res;
@@ -259,7 +259,7 @@ Matrice Matrice::transposee() const
 
 
 Matrice Matrice::inverser(Matrice const &iY) const
-{
+{cout << tx << endl;
     int const n = tx;
     int const m = ty;
 
@@ -279,7 +279,7 @@ Matrice Matrice::inverser(Matrice const &iY) const
                 if ((j >= i+1 || matrice.get(j, j) == 0) && matrice.get(i, j) && j != i)
                 {
                     //On inverse les lignes i et j
-                    for (int k=0; k<n/8; k++)
+                    for (int k=0; k<(n+7)/8; k++)
                     {
                         uint8_t const inter = matrice.elements[i][k];
                         matrice.elements[i][k] = matrice.elements[j][k];    
@@ -292,7 +292,7 @@ Matrice Matrice::inverser(Matrice const &iY) const
                     break;
                 }
             }
-
+if (j==m) cout << i << "pose probleme" << endl;
             if (j==m) continue;
         }
 
@@ -301,7 +301,7 @@ Matrice Matrice::inverser(Matrice const &iY) const
         {
             if ((j >= i+1 || matrice.get(j, j) == 0) && matrice.get(i, j) && j != i)
             {
-                for (int k=0; k<n/8; k++) matrice.elements[j][k] ^= matrice.elements[i][k];
+                for (int k=0; k<(n+7)/8; k++) matrice.elements[j][k] ^= matrice.elements[i][k];
                 Y.elements[j][0] ^= Y.elements[i][0];
             }
         }
@@ -384,7 +384,7 @@ string Matrice::hexa() const
     else
     {
         string res = "";
-        short const iTx = tx/8;
+        short const iTx = (tx+7)/8;
 
         for (short y=0; y<ty; y++)
         {

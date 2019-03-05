@@ -27,15 +27,17 @@ CrypyRecover::CrypyRecover(string pathRacine)
     tailleNom = 36;
     tailleCle = 32;
     tailleExtension = 6;
-    nbBitsIV = tailleIV*8;
-    nbBitsNom = tailleNom*5;
+    nbBitsEtatIV = 8;
+    nbBitsEtatNom = 5;
+    nbBitsIV = tailleIV*nbBitsEtatIV;
+    nbBitsNom = tailleNom*nbBitsEtatNom;
     pathDechiffre = "tests/fichiers_crypy_dechiffres/";
 
     int const tailleCycle = tailleNom+tailleIV;
     int const nbFichiersNecessaires = 624*32/(nbBitsIV+nbBitsNom)+1;
-    int const nbNombresAleatoires = nbFichiersNecessaires*(tailleNom+tailleCle);
+    int const nbNombresAleatoires = nbFichiersNecessaires*(tailleNom+tailleIV);
 
-    //MercenneSlayer::tester();
+    MercenneSlayer::tester();
 
     nbFichiers = nbElementsDans(pathRacine);
     
@@ -45,7 +47,7 @@ CrypyRecover::CrypyRecover(string pathRacine)
         return;
     }
 
-
+    //On recupere le materiel aleatoire
     uint8_t nombresAleatoires[nbNombresAleatoires];
     fichiers = fichiersEtDossiersDans(pathRacine);
 
@@ -55,9 +57,17 @@ CrypyRecover::CrypyRecover(string pathRacine)
         recupererIv(fichiers[i], nombresAleatoires+i*tailleCycle+tailleNom);
     }
 
+    cout << hex << (long)(1.0/62*4294967296) << hex << endl;
+    cout << " test " << randomPython(0x04210842, 0x00000000)*62 << " " << randomPython(0x08FFFFFF, 0xFFFFFFFF)*62 << endl;
+    cout << " test " << randomPython(0xa8000000, 0)*256 << " " << (int)(randomPython(0xa8FFFFFF, 0xFFFFFFFF)*256) << endl;
+    cout << " test " << randomPython(0xa9000000, 0)*256 << " " << randomPython(0xa9FFFFFF, 0xFFFFFFFF)*256 << endl;
+
+    for (short i=0; i<62; i++) cout << i << " " << hex << (long)(i/62.0*4294967296) << endl;
+return;
+
+    //On en deduit les cles utilisees
     mercenneSlayer.sEtatSCrypy(nombresAleatoires);
     //mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
-    exit(0);
 
     keys = new string[nbFichiers];
     for (int i=0; i<nbFichiers; i++) keys[i] = generateKey();
@@ -95,8 +105,8 @@ void CrypyRecover::nomToBits(string nom, uint8_t nombresAleatoires[]) const
         {
             if (nom[i] == caracteres[j])
             {
-                uint32_t *iRes = mercenneSlayer.doubleToW(static_cast<double>(j)/caracteres.length());
-                nombresAleatoires[i-debut] = iRes[0] >> (32-nbBitsNom);
+                uint32_t *iRes = mercenneSlayer.doubleToW(static_cast<double>(j+0.5)/caracteres.length());
+                nombresAleatoires[i-debut] = (j>>1) << 3;//(iRes[0] >> 24) & 0xF8;
                 delete[] iRes;
             }
         }

@@ -13,8 +13,8 @@ class MercenneSlayer
 {
     public:
         MercenneSlayer(short w, short n, short m, short r, W a, short u, W d, short s, W b, short t, W c, short l);
-        void sEtats(double nombresAleatoires[]);
-        void sEtatSCrypy(uint8_t randints[]);
+        void sEtatSCrypy(uint8_t nombreAleatoires[]);
+        void sEtats(double iNombreAleatoires[]);
         void sEtatsSEtats(string pathEtats);
         void sEtats(W nombresAleatoires[]);      //Utilise n nombre generees par Mercenne twister pour determiner notre etat interne
         int randint(int a, int b);
@@ -60,6 +60,7 @@ class MercenneSlayer
         short position;
 };
 
+export double randomPython(uint32_t nombreInitial1, uint32_t nombreInitial2);
 
 template<typename T>
 T inverserGauche(T x, T masque, short decalage)
