@@ -12,8 +12,8 @@ int _tmain(int argc, _TCHAR* argv[])
 int main(int argc, char* argv[])
 #endif
 {
-    //CrypyRecover::tester();
-    MercenneSlayer::tester();
+    CrypyRecover::tester();
+    //MercenneSlayer::tester();
 
 	return 0;
 }

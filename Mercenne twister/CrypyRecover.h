@@ -15,13 +15,20 @@ class CrypyRecover
 
         void decipher(string path) const;
         void recupererIv(string path, uint8_t iv[]) const;
+        void nomToBits(string nom, uint8_t nombreAleatoires[]) const;
 
         static void tester();
 
     private:
         string *keys;
+        int tailleIV;
+        int nbBitsIV;
+        int tailleNom;
+        int tailleCle;
+        int nbBitsNom;
         long nbFichiers;
         string *fichiers;
+        int tailleExtension;
         string pathDechiffre;
         string extensions[285];
         MercenneSlayer mercenneSlayer;

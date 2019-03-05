@@ -437,41 +437,30 @@ void MercenneSlayer::tester()
     Matrice matriceCrypy = mercenneSlayer.matriceGeneraleCrypy();
 
     //On ajoute des contraintes
-    int const finReferences = (624-397)*32;
-    Matrice contraintes(finReferences+397/2*32+(397+1)/2, 624*32);
-    contraintes.coller(Matrice::id(finReferences), 0, 0, finReferences, finReferences); //Les n-m premiers etats servent de reference
+    int const finReferences = 623*32;
+    Matrice contraintes(finReferences+1, 624*32);
+    contraintes.coller(Matrice::id(finReferences), 0, 0, finReferences, finReferences); //Les n-1 premiers etats servent de reference
 
     Matrice A(mercenneSlayer.w, mercenneSlayer.w);
     A.coller(Matrice::id(mercenneSlayer.w-1), 0, 1, mercenneSlayer.w-1, mercenneSlayer.w);
     A.coller(Matrice(intToChar(mercenneSlayer.a), mercenneSlayer.w), mercenneSlayer.w-1, 0, mercenneSlayer.w, mercenneSlayer.w);
 
-    Matrice iPassage(33, 32);
-    iPassage.set(0, 0, 1);
-    iPassage.coller(Matrice::id(31), 2, 1, 33, 32);
-
-    Matrice passage = A*iPassage;
-    Matrice idW = Matrice::id(32);
-
-    for (short i=0; i<397; i+=2)
-    {
-        contraintes.coller(idW, i*32, finReferences+i*32, (i+1)*32, finReferences+(i+1)*32);                                                //m
-        contraintes.coller(passage, finReferences+i*33, finReferences+i*32, finReferences+(i+1)*33, finReferences+(i+1)*32);                //A*(gauche|droite)
-
-        if (i < 396) contraintes.coller(idW, finReferences+i*33+1, finReferences+(i+1)*32, finReferences+(i+1)*33, finReferences+(i+2)*32); //fixe
-    }
+    Matrice iPassage(623*32+1, 32);
+    iPassage.coller(Matrice::id(31), 1, 1, 32, 32);
+    iPassage.set(623*32, 0, 1);
+    
+    contraintes.coller(A*iPassage, 0, finReferences, finReferences+1, 624*32);
+    contraintes.coller(Matrice::id(32), (397-1)*32, finReferences, 397*32, 624*32);
+    
 
     //On verifie que les contraintes sont justes
     short i;
     Matrice randintsMatrice = (matriceCrypy*etats);
     Matrice randintsMatriceT = randintsMatrice.transposee();
 
-    Matrice sousEtats(1, finReferences+397/2*32+(397+1)/2);
+    Matrice sousEtats(1, finReferences+1);
     for (short i=0; i<finReferences; i++) sousEtats.set(0, i, etats.get(0, i));
-    for (short i=0; i<(397+1)/2; i++) sousEtats.set(0, finReferences+i*33, etats.get(0, finReferences+i*2*32));
-
-    for (short i=0; i<397/2; i++) for (short j=0; j<32; j++) sousEtats.set(0, finReferences+1+i*33+j, etats.get(0, finReferences+32+i*2*32+j));
-
-    cout << "sous etats" << endl << sousEtats.hexa() << endl;
+    sousEtats.set(0, finReferences, 0);
 
     Matrice transposeeEtatsContraint = (contraintes*sousEtats).transposee();
     Matrice transposeeEtats = etats.transposee();
@@ -480,7 +469,7 @@ void MercenneSlayer::tester()
     cout << "etat a partir de sous etat" << endl << transposeeEtatsContraint.hexa() << endl;
 
 
-    for (i=0; i<624*4; i++) if (transposeeEtatsContraint.get8(i, 0) != transposeeEtats.get8(i, 0)) break;*/
+    for (i=0; i<624*4; i++) if (transposeeEtatsContraint.get8(i, 0) != transposeeEtats.get8(i, 0)) break;
 
 
     if (i < 624*4)
@@ -490,44 +479,6 @@ void MercenneSlayer::tester()
     }
     else cout << "contraintes correcte" << endl;
 
-    int const x = 624-397;
-    cout << hex << (short)transposeeEtats.get8((x+1)*4, 0) << " " << hex << (short)transposeeEtats.get8((x+1)*4+1, 0)
-  << " " << hex << (short)transposeeEtats.get8((x+1)*4+2, 0) << " " << hex << (short)transposeeEtats.get8((x+1)*4+3, 0)
-    << " | " << hex << (short)(sousEtatsT.get8(x*4, 0)) << " " << hex << (short)(sousEtatsT.get8(x*4+1, 0))
-      << " " << hex << (short)(sousEtatsT.get8(x*4+2, 0)) << " " << hex << (short)(sousEtatsT.get8(x*4+3, 0))
-     << endl;
-
-    Matrice premEtat = sousEtats.bloc(0, finReferences, 1, finReferences+33);
-    Matrice premEtat2 = etats.bloc(0, finReferences, 1, finReferences+64);
-    Matrice etat0 = etats.bloc(0, 0, 1, 32);
-    
-    Matrice rres = (passage*premEtat);
-
-    cout << (string)premEtat << endl;
-    cout << (string)premEtat << endl;
-    cout << rres.hexa() << endl;
-    
-    
-    //On construit les autres morceaux de la matrice
-    Matrice droite = Matrice::masque(intToChar(mercenneSlayer.masqueDroit), mercenneSlayer.w);
-    Matrice gauche = Matrice::masque(intToChar(mercenneSlayer.masqueGauche), mercenneSlayer.w);
-
-    Matrice iSuivant(mercenneSlayer.w*2, mercenneSlayer.w);
-    iSuivant.coller(gauche, 0, 0, mercenneSlayer.w, mercenneSlayer.w);
-    iSuivant.coller(droite, mercenneSlayer.w, 0, mercenneSlayer.w*2, mercenneSlayer.w);
-
-    iSuivant = A*iSuivant;
-    
-    cout << (iSuivant*premEtat2+etat0).hexa() << endl;
-    
-    
-    mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
-
-    for (short j=0; j<decalage; j++) mercenneSlayer.extraire();
-    mercenneSlayer.randint(0, 255);
-
-    cout << hex <<iEtats[0] << " " << hex << mercenneSlayer.etatSuivant(iEtats, 624-397) << endl;
-exit(0);
 
     //Test de l'inversion
     cout << "randint trouves avec matrice " << endl << randintsMatriceT.hexa() << endl;
@@ -542,8 +493,8 @@ exit(0);
     }
     else cout << "matriceCrypy correcte" << endl;
 
-    Matrice matriceCrypyContrainte("matriceCrypyContrainte.ms"); //= matriceCrypy*contraintes;
-    //matriceCrypyContrainte.exporter("matriceCrypyContrainte.ms");
+    Matrice matriceCrypyContrainte = matriceCrypy*contraintes; //("matriceCrypyContrainte.ms"); //= matriceCrypy*contraintes;
+    matriceCrypyContrainte.exporter("matriceCrypyContrainte.ms");
 
     Matrice etatsRetrouves = contraintes*(matriceCrypyContrainte.inverser(randintsMatrice));
     cout << "etats retrouves :" << endl << etatsRetrouves.hexa() << endl;

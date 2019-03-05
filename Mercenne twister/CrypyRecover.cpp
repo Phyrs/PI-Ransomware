@@ -1,12 +1,11 @@
 #include "utile.h"
 #include <iostream>
 #include "Matrice.h"
-#include "CrypyRecover.h"
-
 #include "cryptopp/aes.h"
-#include "cryptopp/filters.h"
-#include "cryptopp/modes.h"
 #include "cryptopp/hex.h"
+#include "CrypyRecover.h"
+#include "cryptopp/modes.h"
+#include "cryptopp/filters.h"
 #include "cryptopp/cryptlib.h"
 
 CrypyRecover::CrypyRecover(string pathRacine)
@@ -24,28 +23,41 @@ CrypyRecover::CrypyRecover(string pathRacine)
               "hwp", "dotm", "dotx", "docm", "DOT", "max", "xml", "uot", "stw", "sxw", "ott", "csr", "key"}),
    mercenneSlayer(32, 624, 397, 31, 0x9908B0DF, 11, 0xFFFFFFFF, 7, 0x9D2C5680, 15, 0xEFC60000, 18)
 {
+    tailleIV = 16;
+    tailleNom = 36;
+    tailleCle = 32;
+    tailleExtension = 6;
+    nbBitsIV = tailleIV*8;
+    nbBitsNom = tailleNom*5;
     pathDechiffre = "tests/fichiers_crypy_dechiffres/";
 
-    MercenneSlayer::tester();
+    int const tailleCycle = tailleNom+tailleIV;
+    int const nbFichiersNecessaires = 624*32/(nbBitsIV+nbBitsNom)+1;
+    int const nbNombresAleatoires = nbFichiersNecessaires*(tailleNom+tailleCle);
+
+    //MercenneSlayer::tester();
 
     nbFichiers = nbElementsDans(pathRacine);
     
-    if (nbFichiers < 624*4/16)
+    if (nbFichiers < nbFichiersNecessaires)
     {
         cout << "Pas assez de fichiers chiffres" << endl;
         return;
     }
 
-    uint8_t randints[624*4];
+
+    uint8_t nombresAleatoires[nbNombresAleatoires];
     fichiers = fichiersEtDossiersDans(pathRacine);
 
-    for (int i=0; i<624*4/16; i++) recupererIv(fichiers[i], randints+i*16);
+    for (int i=0; i<nbFichiersNecessaires; i++)
+    {
+        nomToBits(fichiers[i], nombresAleatoires+i*tailleCycle);
+        recupererIv(fichiers[i], nombresAleatoires+i*tailleCycle+tailleNom);
+    }
 
-    Matrice truc(randints, 624*32);
-    cout << endl << truc.hexa() << endl;
-
-    mercenneSlayer.sEtatSCrypy(randints);
+    mercenneSlayer.sEtatSCrypy(nombresAleatoires);
     //mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
+    exit(0);
 
     keys = new string[nbFichiers];
     for (int i=0; i<nbFichiers; i++) keys[i] = generateKey();
@@ -70,6 +82,25 @@ void CrypyRecover::recupererIv(string path, uint8_t iv[]) const
 	char iIv[17];
 	fichier.read(iIv, 17);
 	for (short i=0; i<16; i++) iv[i] = iIv[i];
+}
+
+void CrypyRecover::nomToBits(string nom, uint8_t nombresAleatoires[]) const
+{
+    int const debut = nom.length()-tailleNom-tailleExtension;
+    static string const caracteres = "1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm";
+
+    for (short i=debut; i<nom.length()-tailleExtension; i++)
+    {
+        for (short j=0; j<caracteres.length(); j++)
+        {
+            if (nom[i] == caracteres[j])
+            {
+                uint32_t *iRes = mercenneSlayer.doubleToW(static_cast<double>(j)/caracteres.length());
+                nombresAleatoires[i-debut] = iRes[0] >> (32-nbBitsNom);
+                delete[] iRes;
+            }
+        }
+    }
 }
 
 void CrypyRecover::decipher(string path) const
