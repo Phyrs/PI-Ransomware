@@ -9,15 +9,15 @@ namespace HiddenTearConsole
     {
         const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890*!=&?&/";
         static byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
-        const int NUMBER_THREAD = 8;
+        static int NUMBER_THREAD = 8;
         static int THREAD_COUNT = 0;
         static System.Threading.Thread[] thread_tab = new System.Threading.Thread[NUMBER_THREAD];
 
         static void Main(string[] args)
         {
-            if(args.Length != 3)
+            if(args.Length != 4)
             {
-                Console.WriteLine("usage : pgm.exe <plain_text_path> <ciphered_text_path> <time_in_seconds_to_bruteforce>\n");
+                Console.WriteLine("usage : pgm.exe <plain_text_path> <ciphered_text_path> <time_in_seconds_to_bruteforce> <number_of_threads>\n");
                 Console.ReadLine();
                 Environment.Exit(1);
             }
@@ -25,7 +25,9 @@ namespace HiddenTearConsole
             string plainpath = args[0];
             string path = args[1];
             int bruteforceLimit = int.Parse(args[2]);
-            
+            NUMBER_THREAD = int.Parse(args[3]);
+
+
             string draftdata = " ";
             int count = 0;
             string password = "";
@@ -38,26 +40,20 @@ namespace HiddenTearConsole
             int countres = -1;
 
             while (count <= bruteforceLimit*1000)
-            {
-                /*int zero = Environment.TickCount;
-                password = CreatePassword(15, count);
-                if(count % 50 == 0)
-                    Console.WriteLine("Try number : " + count);
-                int un = Environment.TickCount;
-                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                passwordBytes = SHA256.Create().ComputeHash(passwordBytes);
-                int deux = Environment.TickCount;
-                byte[] bytesDecrypted = AES_Decrypt(bytesToBeDecrypted, passwordBytes);
-                int trois = Environment.TickCount;*/
-                
+            {   
                 // Waiting for empty thread slot
-                while(THREAD_COUNT == NUMBER_THREAD)
+                while(THREAD_COUNT == NUMBER_THREAD && !found)
                 {
                     for (int i = 0; i < NUMBER_THREAD; i++)
                     {
                         if (thread_tab[i] != null && !thread_tab[i].IsAlive)
                             THREAD_COUNT--;
                     }
+                }
+
+                if (found)
+                {
+                    break;
                 }
 
                 int countForThread = count;
@@ -97,13 +93,10 @@ namespace HiddenTearConsole
                 }
                 thread.Start();
                 count = count + 1000;
-
-                /*draftdata = System.Text.Encoding.UTF8.GetString(bytesDecrypted);
-                count++;
-                if (count % 50 == 0)
-                    Console.WriteLine("Un : " + (deux -un) + " deux : " + (trois- deux) + " trois : " + (un-zero));*/
+                
             }
 
+            //Waiting for threads to finish or the key to be found
             while (!found && THREAD_COUNT != 0)
             {
                 for (int i = 0; i < THREAD_COUNT; i++)
@@ -116,12 +109,15 @@ namespace HiddenTearConsole
                 }
             }
 
+
+            // Printing result
             if (!found)
             {
                 Console.WriteLine("Key has not been found...\n");
                 Environment.Exit(0);
             }
 
+            // Stopping all threads
             for (int i = 0; i < THREAD_COUNT; i++)
             {
                 if (thread_tab[i] != null && thread_tab[i].IsAlive)
