@@ -14,11 +14,12 @@ HiddenTearRecoverer::HiddenTearRecoverer(string pass)
     password = pass;
 }
 
-HiddenTearRecoverer::HiddenTearRecoverer(string pl, string ciph, int sec)
+HiddenTearRecoverer::HiddenTearRecoverer(string pl, string ciph, int sec, int t)
 {
     plain = pl;
 	ciphered = ciph;
 	seconds_bruteforce = sec;
+	thread_number = t;
 }
 
 void HiddenTearRecoverer::decipher(string path) const
@@ -26,8 +27,9 @@ void HiddenTearRecoverer::decipher(string path) const
 	string cmd(EXE_PATH);
 	cmd.append(" ");
 	cmd.append(password);
-	cmd.append(" ");
+	cmd.append(" \"");
 	cmd.append(path);
+	cmd.append("\"");
 
 	STARTUPINFO si;
     PROCESS_INFORMATION pi;
@@ -75,14 +77,18 @@ void HiddenTearRecoverer::decipher(string path) const
 void HiddenTearRecoverer::bruteforce()
 {
 	string cmd(EXE_PATH2);
-	cmd.append(" ");
+	cmd.append(" \"");
 	cmd.append(plain);
-	cmd.append(" ");
+	cmd.append("\" \"");
 	cmd.append(ciphered);
-	cmd.append(" ");
+	cmd.append("\" ");
 	char number[50];
 	sprintf(number, "%d", seconds_bruteforce);
 	cmd.append(number);
+	cmd.append(" ");
+	char number2[50];
+	sprintf(number2, "%d", thread_number);
+	cmd.append(number2);
 
 	STARTUPINFO si;
     PROCESS_INFORMATION pi;

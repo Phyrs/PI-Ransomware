@@ -45,11 +45,12 @@ short getUserChoice(){
 
 string askUserForPath(){
 	bool isPathADir = false;
-	string path = "";
+	string path;
+	getline(cin,path);
 	do{
 		printf("\n Please enter a specific path (to a directory) to consider (Enter C:/ to analyze the whole disk) :\n");
 		cin.clear();
-		cin >> path;
+		getline(cin,path);
 		isPathADir = isADirectory(path);
 	} while (!isPathADir);
 	return path;
@@ -57,11 +58,12 @@ string askUserForPath(){
 
 string askUserForFilePath(string text){
 	bool isPathAFile = false;
-	string path = "";
+	string path;
+	fflush(stdin);
 	do{
 		printf(text.c_str());
+		getline(cin,path);
 		cin.clear();
-		cin >> path;
 		isPathAFile = isAFile(path);
 	} while (!isPathAFile);
 	return path;

@@ -111,10 +111,10 @@ void recover_files(short id_tool_selected){
 		string file_path = line.substr(line.find(delimiter)+1, line.size());
 
 		// Vipasana file, need the Vipasana Recovery Tool
-		if(!ransomware_name.compare("Vipasana")){
+		if(!ransomware_name.compare("Vipasana") && !string("Vipasana").compare(recovery_tools[id_tool_selected])){
 			vipasanaRecover->decipher(file_path);
 		}
-		if(!ransomware_name.compare("HiddenTear")){
+		if(!ransomware_name.compare("HiddenTear") && !string("HiddenTearPassword").compare(recovery_tools[id_tool_selected])){
 			hiddenTearRecoverer->decipher(file_path);
 		}
 	}
@@ -131,13 +131,19 @@ void bruteforce_hiddentear(){
 	cipheredpath = askUserForFilePath(string("Now, please enter the path of the cipheredtext file :\n"));
 	int seconds = -1;
 	do {
-		printf("Finally, Enter the number of seconds of the range to bruteforce. (10 will bruteforce from 0 to 10000 hidden-tear password seed)\n");
+		printf("Then, Enter the number of seconds of the range to bruteforce. (10 will bruteforce from 0 to 10000 hidden-tear password seed)\n");
 		seconds = getUserChoice();
 
-	} while( seconds < 0);
+	} while( seconds < 1);
+	int threads = -1;
+	do {
+		printf("Finally, Enter the number of threads you want to run. (1 thread processes a range of 1000 tries)\n");
+		threads = getUserChoice();
+
+	} while( threads < 1);
 
 	HiddenTearRecoverer *hiddenTearRecoverer;
-	hiddenTearRecoverer = new HiddenTearRecoverer(plainpath, cipheredpath, seconds);
+	hiddenTearRecoverer = new HiddenTearRecoverer(plainpath, cipheredpath, seconds, threads);
 	hiddenTearRecoverer->bruteforce();
 }
 

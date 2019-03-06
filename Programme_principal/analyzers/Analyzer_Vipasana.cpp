@@ -64,11 +64,11 @@ void AnalyzerVipasana::analyzer_compute(){
 	// Name checking
 	check_file_name();
 
-	// End Signature checking
-	check_end_signature();
-
 	// First 768 bytes checking
 	check_first_bytes();
+
+	// End Signature checking
+	check_end_signature();
 }
 
 
