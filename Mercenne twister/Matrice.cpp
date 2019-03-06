@@ -48,7 +48,7 @@ Matrice::Matrice(string path) : tx(0), ty(0)
 	
 	if (!fMatrice)
 	{
-	    cerr << "Error while opening file " << path << endl;
+	    //cerr << "Error while opening file " << path << endl;
 	    fMatrice.close();
 	    return;
 	}
@@ -207,7 +207,7 @@ Matrice Matrice::operator*(Matrice const &A) const
 
             }
         }
-        //if (y%100 == 0) cout << y << endl;
+        if (y%100 == 0) cout << y << endl;
     }
 
     return res;

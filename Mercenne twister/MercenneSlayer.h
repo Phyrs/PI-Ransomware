@@ -29,15 +29,17 @@ class MercenneSlayer
         template<typename T>
         T choice(T tableau[], int tailleTableau);
 
-        Matrice matriceExtraction() const;                  //Matrice w x w representant la fonction d'extraction
-        W iExtraire(W nombreInitial) const;                 //Entier de w bits correspondant a l'etat nombreInitial
-        Matrice matriceGeneraleCrypy() const;               //Matrice M (n*w) x (n*w) telle que : M*etatInterne = (IV generes par Crypy mis bout a bout)
-        double random(W etat1, W etat2) const;              //Resultat de random() de python en partant de deux etat
-        W* doubleToW(double nombreAleatoire) const;         //53 bits des deux entiers de 32 bits utilises pour creer le flottant par random()
-        W etatSuivant(W etats[], short nEtat) const;        //Fonction intermediaire utilisee par la fonction melanger
-        W inverserExtraction(W nombreAleatoire) const;      //Ieme etat utilise pour creer l'entier de w bits
+        Matrice matriceExtraction() const;                                     //Matrice w x w representant la fonction d'extraction
+        W iExtraire(W nombreInitial) const;                                    //Entier de w bits correspondant a l'etat nombreInitial
+        double random(W etat1, W etat2) const;                                 //Resultat de random() de python en partant de deux etat
+        W* doubleToW(double nombreAleatoire) const;                            //53 bits des deux entiers de 32 bits utilises pour creer le flottant par random()
+        W etatSuivant(W etats[], short nEtat) const;                           //Fonction intermediaire utilisee par la fonction melanger
+        W inverserExtraction(W nombreAleatoire) const;                         //Ieme etat utilise pour creer l'entier de w bits
         int randint(W etat1, W etat2, int a, int b) const;
         W* intToW(int nombreAleatoire, int a, int b) const;
+
+        //Matrice M (n*w) x (n*w) telle que : M*etatInterne = (IV generes par Crypy mis bout a bout), tailleCycles = [cycles utiles, cycles vides, cycles utiles, ...], tailleCycle = bitsUtiles.length()
+        Matrice matriceGeneraleCrypy(int nbBitsCycles[], int tailleCycles[], int nbCycles) const;
 
         static void tester();
 
