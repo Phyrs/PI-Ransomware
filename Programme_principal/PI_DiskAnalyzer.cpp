@@ -22,6 +22,7 @@
 #include "tools/menu.h"
 #include "recoverers/VipasanaRecover.h"
 #include "recoverers/HiddenTearRecoverer.h"
+#include "recoverers/CrypyRecover.h"
 
 #pragma comment(lib, "User32.lib")
 
@@ -94,13 +95,23 @@ void recover_files(short id_tool_selected){
 
 	HiddenTearRecoverer *hiddenTearRecoverer;
 	// Preparing HiddenTear Recovery tool
-	if(!string("HiddenTearPassword").compare(recovery_tools[id_tool_selected])){
+	if(!string("HiddenTear").compare(recovery_tools[id_tool_selected])){
 		string password = "";
 		printf("You have chosen HiddenTear RecoveryTool.\n");
 
 		password = askUserForFifteenBytesPass(string("Please enter the 15 caracters pass you have discovered (must be 15 carac.)\n"));
 
 		hiddenTearRecoverer = new HiddenTearRecoverer(password);
+	}
+
+	CrypyRecover *crypyRecoverer;
+	// Preparing Crypy Recovery tool
+	if(!string("CryPy").compare(recovery_tools[id_tool_selected])){
+		printf("You have chosen Crypy RecoveryTool.\n");
+		string folderpath = "";
+
+		folderpath = askUserForPath(string("Please enter the path of the CryPy ciphered files folder. (Must be a folder with at least 156 ciphered files)\n"));
+		crypyRecoverer = new CrypyRecover(folderpath);
 	}
 
 	// Iterating through the list to recover.
@@ -110,12 +121,15 @@ void recover_files(short id_tool_selected){
 		string ransomware_name = line.substr(0, line.find(delimiter));
 		string file_path = line.substr(line.find(delimiter)+1, line.size());
 
-		// Vipasana file, need the Vipasana Recovery Tool
 		if(!ransomware_name.compare("Vipasana") && !string("Vipasana").compare(recovery_tools[id_tool_selected])){
 			vipasanaRecover->decipher(file_path);
 		}
-		if(!ransomware_name.compare("HiddenTear") && !string("HiddenTearPassword").compare(recovery_tools[id_tool_selected])){
+		if(!ransomware_name.compare("HiddenTear") && !string("HiddenTear").compare(recovery_tools[id_tool_selected])){
 			hiddenTearRecoverer->decipher(file_path);
+		}
+
+		if(!ransomware_name.compare("CryPy") && !string("CryPy").compare(recovery_tools[id_tool_selected])){
+			crypyRecoverer->decipher(file_path);
 		}
 	}
 	file.close();
@@ -153,7 +167,8 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	// Initializing recovery tool available.
 	recovery_tools.push_back("Vipasana");
-	recovery_tools.push_back("HiddenTearPassword");
+	recovery_tools.push_back("HiddenTear");
+	recovery_tools.push_back("CryPy");
 
 	int userChoice = 0;
 	printFirstMenu();
@@ -166,7 +181,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	string path("");
 	switch(userChoice){
 		case 1:
-			path = askUserForPath();
+			path = askUserForPath("\n Please enter a specific path (to a directory) to consider (Enter C:/ to analyze the whole disk) :\n");
 			init_threading(reportFileName);
 			listDirectory(path);
 			end_threading();

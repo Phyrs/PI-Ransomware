@@ -7,6 +7,139 @@
 #include <string.h>
 #include <math.h>
 
+namespace BABA{
+// Contains windows API functions & structures
+#include <Windows.h>
+}
+
+string executer(string commande)
+{
+    char iRes[1024];
+
+    string res = "";
+    FILE *pipe = popen(commande.c_str(), "r");
+
+    while (fgets(iRes, 1024, pipe)) res += iRes;
+    pclose(pipe);
+
+    return res;
+}
+
+long nbElementsDans(string path)
+{
+    long res = -2;
+
+#ifdef WINDOWS
+	path += "\\";
+    HANDLE hSearch;
+	WIN32_FIND_DATA File;
+	string pathAdapte = path+"*.*";
+    hSearch = FindFirstFile(wstring(pathAdapte.begin(), pathAdapte.end()).c_str(), &File); 
+
+    if (hSearch != INVALID_HANDLE_VALUE) 
+    { 
+        do
+        { 
+			res++;
+        }
+        while (FindNextFile(hSearch, &File)); 
+  
+        FindClose(hSearch); 
+    }
+#else
+    DIR *dossier = opendir(path.c_str()); 
+  
+    if (dossier) 
+    {
+        struct dirent *lien; 
+        while ((lien = readdir(dossier))) res++;
+        closedir(dossier);
+    }
+#endif
+
+    return res;
+}
+
+string* fichiersEtDossiersDans(string path)
+{
+	int nbFichiers = nbElementsDans(path);
+	string *res = new string[nbFichiers];
+
+#ifdef WINDOWS
+	path += "\\";
+	HANDLE hSearch;
+	WIN32_FIND_DATA File;
+	string pathAdapte = path+"*.*";
+	FILETIME *dateFichiers = new FILETIME[nbFichiers];
+    hSearch = FindFirstFile(wstring(pathAdapte.begin(), pathAdapte.end()).c_str(), &File); 
+
+	int nFichier = 0;
+
+    if (hSearch != INVALID_HANDLE_VALUE) 
+    { 
+        do
+        {
+			wstring iFichier = File.cFileName;
+			string fichier(iFichier.begin(), iFichier.end());
+
+			if (fichier == "." || fichier == "..") continue;
+			fichier = path+fichier;
+
+			HANDLE hFile = CreateFile(wstring(fichier.begin(), fichier.end()).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+				                      FILE_ATTRIBUTE_NORMAL, NULL);
+
+			GetFileTime(hFile, &dateFichiers[nFichier], NULL, NULL);
+			if (hFile == INVALID_HANDLE_VALUE) continue;
+
+			res[nFichier] = fichier;
+			FILETIME dateFichier = dateFichiers[nFichier];
+
+			for (int i=0; i<nFichier; i++)
+			{
+				if (CompareFileTime(&dateFichier, &dateFichiers[i]) < 0)
+				{
+					for (int j=nFichier; j>i; j--)
+					{
+						res[j] = res[j-1];
+						dateFichiers[j] = dateFichiers[j-1];
+					}
+
+					res[i] = fichier;
+					dateFichiers[i] = dateFichier;
+					break;
+				}
+			}
+
+			nFichier++;
+        }
+        while (FindNextFile(hSearch, &File)); 
+
+        FindClose(hSearch); 
+    }
+#else
+    string iRes = executer("ls -atr \""+path+"\"");
+
+    long i = 0;
+    long fin = iRes.find('\n');
+
+    while (fin != -1)
+    {
+        string element = iRes.substr(0, fin);
+
+        if (element != ".." && element != ".")
+        {
+            res[i] = path+"/"+iRes.substr(0, fin);
+            i++;
+        }
+
+        iRes = iRes.substr(fin+1);
+        fin = iRes.find('\n');
+    }
+#endif //WINDOWS
+
+    return res;
+}
+
 ifstream loadFile(char const *path){
 	ifstream file;
 	file.open(path, ios::binary);

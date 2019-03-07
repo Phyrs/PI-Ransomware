@@ -16,7 +16,7 @@ void printChoiceMenu();
 
 short getUserChoice();
 
-string askUserForPath();
+string askUserForPath(string text);
 
 string askUserForFilePath(string text);
 

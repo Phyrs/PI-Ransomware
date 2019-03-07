@@ -20,6 +20,19 @@ WpdPack: - mettre le path vers le répertoire Include de WpdPack dans Propriét�
 // WinPcap requirements:
 // Libray: https://www.winpcap.org/devel.htm
 // Doc: https://www.winpcap.org/docs/docs_411/html/group__wpcapsamps.html
+cryptopp : 1) Ouvrir cryptest.sln avec Visual Studio
+	   2) Clique droit sur la solution -> Générer en tâche de fond
+ 	   3) Cocher cryptlib - Win32|Debug
+		     cryptlib - Win32|Release
+		     cryptdll - Win32|Debug
+		     cryptdll - Win32|Release
+	   4) Clique droit sur la solution -> Ajouter un projet et ajouter le projet existant PI_Disk_Analyzer
+	   5) Clique droit sur le projet -> Propriétés
+		- Dans "Propriétés communes", ajouter une nouvelle référence et choisir cryptlib.
+		- Dans C/C++ -> Génération de COde -> Passer "Bibliothèque RunTime à MultiThread \MT
+
+
+
 
 *********************************
           Exécution

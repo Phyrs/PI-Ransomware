@@ -8,6 +8,7 @@
 #include "../analyzers/Analyzer_Chi_Squared.h"
 #include "../analyzers/Analyzer_Vipasana.h"
 #include "../analyzers/Analyzer_HiddenTear.h"
+#include "../analyzers/Analyzer_Crypy.h"
 #include <vector>
 #include <string>
 #include <stdio.h>
@@ -61,6 +62,7 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 	tabAnalyzers[0] = new AnalyzerChiSquared(td->file_path);
 	tabAnalyzers[1] = new AnalyzerVipasana(td->file_path, (int)filesize(td->file_path));
 	tabAnalyzers[2] = new AnalyzerHidden(td->file_path, tabAnalyzers[0]);
+	tabAnalyzers[3] = new AnalyzerCrypy(td->file_path, tabAnalyzers[0]);
 
 	bool process = false;
 	long cursorpos = 0;
@@ -74,6 +76,10 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 
 	// If we can not open the file, just stop the thread.
 	if(!file.good()){
+		int countAna = 0;
+		for(countAna; countAna < ANALYZERS_NUMBER ; countAna++){
+			delete tabAnalyzers[countAna];
+		}
 		// Wait for the write operation to be secure
 		WaitForSingleObject( 
 				WRITE_MUTEX,    // handle to mutex
@@ -147,9 +153,10 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 					 1,                      // increase count by one
                      NULL);                  // not interested in previous count
 
-	delete tabAnalyzers[0];
-	delete tabAnalyzers[1];
-	delete tabAnalyzers[2];
+	int countAna = 0;
+	for(countAna; countAna < ANALYZERS_NUMBER ; countAna++){
+		delete tabAnalyzers[countAna];
+	}
 	return 0;
 }
 
