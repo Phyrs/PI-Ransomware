@@ -1,4 +1,5 @@
 //#include "stdafx.h"
+#include "utile.h"
 #include <fstream>
 #include <iostream>
 #include "Matrice.h"
@@ -530,7 +531,7 @@ void MercenneSlayer::tester()
     //Tests matrice generale crypy
     int const w = 32;
     int const n = 624;
-    int const decalage = 4;//25*n;
+    int const decalage = 0;//25*n;
     int const tailleIV = 16;
     int const tailleNom = 36;
     int const tailleCle = 32;
@@ -592,7 +593,7 @@ void MercenneSlayer::tester()
     }
 
     cout << "iNombresAleatoires" << endl << Matrice(iNombresAleatoires, nbNombresAleatoires*8).hexa() << endl;
-return;
+
     //Construction de la matrice de nombre aleatoires
 
     Matrice nombresAleatoires(iNombresAleatoires, n*w);//(1, 624*32);

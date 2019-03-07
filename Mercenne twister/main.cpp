@@ -12,6 +12,7 @@ using namespace std;
 int _tmain(int argc, _TCHAR* argv[])
 #else
 
+#include "utile.h"
 #include "CrypyRecover.h"
 #include "MercenneSlayer.h"
 int main(int argc, char* argv[])

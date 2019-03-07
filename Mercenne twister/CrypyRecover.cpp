@@ -49,7 +49,8 @@ CrypyRecover::CrypyRecover(string pathRacine)
     nbBitsEtatNom = 5;
     nbBitsIV = tailleIV*nbBitsEtatIV;
     nbBitsNom = tailleNom*nbBitsEtatNom;
-    pathDechiffre = "fichiers_crypy_dechiffres"+SEPARATEUR;
+    pathDechiffre = "fichiers_crypy_dechiffres";
+    system((string("mkdir ")+pathDechiffre).c_str());
 
     int const tailleCycle = tailleIV;//+tailleNom;
     int const nbFichiersNecessaires = 1+624*32/(nbBitsIV);//+nbBitsNom);
@@ -89,8 +90,8 @@ CrypyRecover::CrypyRecover(string pathRacine)
 */
 
     //On en deduit les cles utilisees
-    mercenneSlayer.sEtatSCrypy(nombresAleatoires);
-    //mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
+    //mercenneSlayer.sEtatSCrypy(nombresAleatoires);
+    mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
 
     keys = new string[nbFichiers];
     for (int i=0; i<nbFichiers; i++) keys[i] = generateKey();
@@ -107,7 +108,7 @@ void CrypyRecover::recupererIv(string path, uint8_t iv[]) const
 
 	if (!fichier)
 	{
-	    cerr << "Error while opening file " << path << endl;
+	    cout << "Error while opening file " << path << endl;
 	    fichier.close();
 	    return;
 	}
@@ -174,14 +175,16 @@ void CrypyRecover::decipher(string path) const
     byte iKey[32];
     for (short i=0; i<32; i++) iKey[i] = static_cast<uint8_t>(key[i]);
 
+    string pathNouveau = pathDechiffre+SEPARATEUR+"fichier"+to_string(static_cast<long long>(nFichier));
+
     ofstream fNouveau;
-    fNouveau.open((pathDechiffre+"fichier"+to_string(static_cast<long long>(nFichier))).c_str(), ios::binary);
+    fNouveau.open(pathNouveau.c_str(), ios::binary);
 
     char iDonnees[65537];
     fichier.read(iDonnees, 65536);
     int nbDonnees = fichier.gcount();
 
-    while(nbDonnees > 0)
+    while (nbDonnees > 0)
     {
         byte donnees[65537];
         for (long i=0; i<nbDonnees; i++) donnees[i] = static_cast<uint8_t>(iDonnees[i]);
@@ -199,6 +202,8 @@ void CrypyRecover::decipher(string path) const
 
     fichier.close();
     fNouveau.close();
+
+    rename(pathNouveau.c_str(), (pathNouveau+"."+getExtension(pathNouveau)).c_str());
 }
 
 string CrypyRecover::generateKey()
@@ -224,12 +229,12 @@ void CrypyRecover::tester()
 {
 #ifdef WINDOWS
     CrypyRecover crypyRecover("__SINTA I LOVE YOU__");
-    crypyRecover.decipher("__SINTA I LOVE YOU__\\f3TvPsmcL7fDgsQpwZvuklET2PgjCziy723l.sinta");
+    //crypyRecover.decipher("__SINTA I LOVE YOU__\\f3TvPsmcL7fDgsQpwZvuklET2PgjCziy723l.sinta");
 #else
-    CrypyRecover crypyRecover("tests/Documents/__SINTA I LOVE YOU__");
-    crypyRecover.decipher("tests/Documents/__SINTA I LOVE YOU__/f3TvPsmcL7fDgsQpwZvuklET2PgjCziy723l.sinta");
+    CrypyRecover crypyRecover("tests/crypy2");
+    //crypyRecover.decipher("tests/crypy/f3TvPsmcL7fDgsQpwZvuklET2PgjCziy723l.sinta");
 #endif //WINDOWS
     
-    for (long i=0; i<100; i++) crypyRecover.decipher(crypyRecover.fichiers[i]);
+    for (long i=0; i<crypyRecover.nbFichiers; i++) crypyRecover.decipher(crypyRecover.fichiers[i]);
 	getchar();
 }

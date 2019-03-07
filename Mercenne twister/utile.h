@@ -24,6 +24,7 @@
 using namespace std;
 
 void testFichier();
+string getExtension(string path);
 string executer(string commande);
 long nbElementsDans(string path);
 ifstream loadFile(char const *path);
