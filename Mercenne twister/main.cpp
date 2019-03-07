@@ -1,14 +1,19 @@
 //#include "stdafx.h"
-
+#include "utile.h"
 #include <iostream>
-#include "CrypyRecover.h"
-#include "MercenneSlayer.h"
 
 using namespace std;
 
 #ifdef WINDOWS
+
+#include "../Mercenne twister/CrypyRecover.h"
+#include "../Mercenne twister/MercenneSlayer.h"
+
 int _tmain(int argc, _TCHAR* argv[])
 #else
+
+#include "CrypyRecover.h"
+#include "MercenneSlayer.h"
 int main(int argc, char* argv[])
 #endif
 {
@@ -17,4 +22,5 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+
 

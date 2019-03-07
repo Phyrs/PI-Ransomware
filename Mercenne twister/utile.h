@@ -4,8 +4,16 @@
 //#define WINDOWS
 
 #ifdef WINDOWS
-    #include "stdafx.h"
+    #include "../cryptopp810/test111/stdafx.h"
+	#include <windows.h>
+	#include <stdint.h>
+	#include <sstream>
+
     #define popen _popen
+	#define pclose _pclose
+#else
+    #include <bits/stdc++.h> 
+    #include <dirent.h>
 #endif
 
 #include <stack>

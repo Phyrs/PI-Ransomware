@@ -1,6 +1,7 @@
 #ifndef CRYPY_RECOVER_H
 #define CRYPY_RECOVER_H
 
+//#include "../cryptopp810/test111/stdafx.h"
 #include <string>
 #include "MercenneSlayer.h"
 

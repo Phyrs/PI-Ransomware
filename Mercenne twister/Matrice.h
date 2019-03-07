@@ -1,6 +1,8 @@
 #ifndef MATRICE_H
 #define MATRICE_H
 
+//#include "../cryptopp810/test111/stdafx.h"
+#include "utile.h"
 #include <string>
 
 using namespace std;
@@ -42,8 +44,8 @@ class Matrice
         static Matrice decalageGauche(short tx, short decalage);
 
     //private:
-        short tx;           //Nombre de colonnes
-        short ty;           //Nombre de lignes
+        int tx;             //Nombre de colonnes
+        int ty;             //Nombre de lignes
         uint8_t **elements;
 };
 

@@ -1,15 +1,32 @@
+//#include "stdafx.h"
 #include "utile.h"
 #include <iostream>
 #include "Matrice.h"
-#include "cryptopp/aes.h"
-#include "cryptopp/hex.h"
 #include "CrypyRecover.h"
-#include "cryptopp/modes.h"
-#include "cryptopp/filters.h"
-#include "cryptopp/cryptlib.h"
+
+#ifdef WINDOWS
+    #include "../cryptopp564/aes.h"
+    #include "../cryptopp564/hex.h"
+    #include "../cryptopp564/modes.h"
+    #include "../cryptopp564/filters.h"
+    #include "../cryptopp564/cryptlib.h"
+
+    #define SEPARATEUR string("\\")
+#else
+    #include "cryptopp/aes.h"
+    #include "cryptopp/hex.h"
+    #include "cryptopp/modes.h"
+    #include "cryptopp/filters.h"
+    #include "cryptopp/cryptlib.h"
+
+    #define byte CryptoPP::byte
+    #define SEPARATEUR string("/")
+#endif
 
 CrypyRecover::CrypyRecover(string pathRacine)
-: extensions({"txt", "exe", "php", "pl", "7z", "rar", "m4a", "wma", "avi", "wmv", "csv", "d3dbsp", "sc2save", "sie", "sum", "ibank", "t13", "t12", "qdf", "gdb", "tax", "pkpass", "bc6", "bc7", "bkp",
+: mercenneSlayer(32, 624, 397, 31, 0x9908B0DF, 11, 0xFFFFFFFF, 7, 0x9D2C5680, 15, 0xEFC60000, 18)
+{
+	string const iExtensions[285] = {"txt", "exe", "php", "pl", "7z", "rar", "m4a", "wma", "avi", "wmv", "csv", "d3dbsp", "sc2save", "sie", "sum", "ibank", "t13", "t12", "qdf", "gdb", "tax", "pkpass", "bc6", "bc7", "bkp",
               "qic", "bkf", "sidn", "sidd", "mddata", "itl", "itdb", "icxs", "hvpl", "hplg", "hkdb", "mdbackup", "syncdb", "gho", "cas", "svg", "map", "wmo", "itm", "sb", "fos", "mcgame", "vdf",
               "ztmp", "sis", "sid", "ncf", "menu", "layout", "dmp", "blob", "esm", "001", "vtf", "dazip", "fpk", "mlx", "kf", "iwd", "vpk", "tor", "psk", "rim", "w3x", "fsh", "ntl", "arch00", "lvl",
               "snx", "cfr", "ff", "vpp_pc", "lrf", "m2", "mcmeta", "vfs0", "mpqge", "kdb", "db0", "mp3", "upx", "rofl", "hkx", "bar", "upk", "das", "iwi", "litemod", "asset", "forge", "ltx", "bsa",
@@ -20,9 +37,10 @@ CrypyRecover::CrypyRecover(string pathRacine)
               "srt", "cpp", "mid", "mkv", "mov", "asf", "mpeg", "vob", "mpg", "fla", "swf", "wav", "qcow2", "vdi", "vmdk", "vmx", "gpg", "aes", "ARC", "PAQ", "tar.bz2", "tbk", "bak", "djv", "djvu",
               "bmp", "cgm", "tif", "tiff", "NEF", "cmd", "class", "jar", "java", "asp", "brd", "sch", "dch", "dip", "vbs", "asm", "pas", "ldf", "ibd", "MYI", "MYD", "frm", "dbf", "SQLITEDB", "SQLITE3",
               "asc", "lay6", "lay", "ms11 (Security copy)", "sldm", "sldx", "ppsm", "ppsx", "ppam", "docb", "mml", "sxm", "otg", "slk", "xlw", "xlt", "xlm", "xlc", "dif", "stc", "sxc", "ots", "ods",
-              "hwp", "dotm", "dotx", "docm", "DOT", "max", "xml", "uot", "stw", "sxw", "ott", "csr", "key"}),
-   mercenneSlayer(32, 624, 397, 31, 0x9908B0DF, 11, 0xFFFFFFFF, 7, 0x9D2C5680, 15, 0xEFC60000, 18)
-{
+              "hwp", "dotm", "dotx", "docm", "DOT", "max", "xml", "uot", "stw", "sxw", "ott", "csr", "key"};
+
+	for (int i=0; i<285; i++) extensions[i] = iExtensions[i];
+
     tailleIV = 16;
     tailleNom = 36;
     tailleCle = 32;
@@ -31,7 +49,7 @@ CrypyRecover::CrypyRecover(string pathRacine)
     nbBitsEtatNom = 5;
     nbBitsIV = tailleIV*nbBitsEtatIV;
     nbBitsNom = tailleNom*nbBitsEtatNom;
-    pathDechiffre = "tests/fichiers_crypy_dechiffres/";
+    pathDechiffre = "fichiers_crypy_dechiffres"+SEPARATEUR;
 
     int const tailleCycle = tailleIV;//+tailleNom;
     int const nbFichiersNecessaires = 1+624*32/(nbBitsIV);//+nbBitsNom);
@@ -43,12 +61,12 @@ CrypyRecover::CrypyRecover(string pathRacine)
 
     if (nbFichiers < nbFichiersNecessaires)
     {
-        cout << "Pas assez de fichiers chiffres" << endl;
+        cout << "Pas assez de fichiers chiffres : " << nbFichiers << " / " << nbFichiersNecessaires << endl;
         return;
     }
 
     //On recupere le materiel aleatoire
-    uint8_t nombresAleatoires[nbNombresAleatoires];
+    uint8_t *nombresAleatoires = new uint8_t[nbNombresAleatoires];
     fichiers = fichiersEtDossiersDans(pathRacine);
 
 /*
@@ -78,6 +96,8 @@ CrypyRecover::CrypyRecover(string pathRacine)
     for (int i=0; i<nbFichiers; i++) keys[i] = generateKey();
 
     cout << keys[0] << " " << keys[1] << " " << keys[2] << endl;
+
+	delete[] nombresAleatoires;
 }
 
 void CrypyRecover::recupererIv(string path, uint8_t iv[]) const
@@ -148,14 +168,14 @@ void CrypyRecover::decipher(string path) const
     char iIv[17];
 	fichier.read(iIv, 16);
 
-    CryptoPP::byte iv[17];
+    byte iv[17];
     for (short i=0; i<16; i++) iv[i] = static_cast<uint8_t>(iIv[i]);
     
-    CryptoPP::byte iKey[32];
+    byte iKey[32];
     for (short i=0; i<32; i++) iKey[i] = static_cast<uint8_t>(key[i]);
 
     ofstream fNouveau;
-    fNouveau.open((pathDechiffre+"fichier"+to_string(nFichier)).c_str(), ios::binary);
+    fNouveau.open((pathDechiffre+"fichier"+to_string(static_cast<long long>(nFichier))).c_str(), ios::binary);
 
     char iDonnees[65537];
     fichier.read(iDonnees, 65536);
@@ -163,7 +183,7 @@ void CrypyRecover::decipher(string path) const
 
     while(nbDonnees > 0)
     {
-        CryptoPP::byte donnees[65537];
+        byte donnees[65537];
         for (long i=0; i<nbDonnees; i++) donnees[i] = static_cast<uint8_t>(iDonnees[i]);
 
         CryptoPP::CBC_Mode<CryptoPP::AES >::Decryption d;
@@ -202,8 +222,14 @@ CrypyRecover::~CrypyRecover()
 //Fonctions statiques
 void CrypyRecover::tester()
 {
+#ifdef WINDOWS
+    CrypyRecover crypyRecover("__SINTA I LOVE YOU__");
+    crypyRecover.decipher("__SINTA I LOVE YOU__\\f3TvPsmcL7fDgsQpwZvuklET2PgjCziy723l.sinta");
+#else
     CrypyRecover crypyRecover("tests/Documents/__SINTA I LOVE YOU__");
     crypyRecover.decipher("tests/Documents/__SINTA I LOVE YOU__/f3TvPsmcL7fDgsQpwZvuklET2PgjCziy723l.sinta");
+#endif //WINDOWS
     
     for (long i=0; i<100; i++) crypyRecover.decipher(crypyRecover.fichiers[i]);
+	getchar();
 }

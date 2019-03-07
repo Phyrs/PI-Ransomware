@@ -1,7 +1,10 @@
+//#include "stdafx.h"
+#include "utile.h"
+#include "Matrice.h"
 #include <fstream>
 #include <iostream>
-#include "Matrice.h"
-#include <bits/stdc++.h> 
+
+using namespace std;
 
 uint8_t xorChar(uint8_t x)
 {
@@ -44,7 +47,7 @@ Matrice::Matrice(uint8_t const iElements[], short ty) : tx(1), ty(ty), elements(
 Matrice::Matrice(string path) : tx(0), ty(0)
 {
     ifstream fMatrice;
-	fMatrice.open(path.c_str());
+	fMatrice.open(path.c_str(), ios::binary);
 	
 	if (!fMatrice)
 	{
@@ -56,20 +59,20 @@ Matrice::Matrice(string path) : tx(0), ty(0)
 	fMatrice.seekg(0, ios::beg);
 	
 	char caractere;
-    while (fMatrice.get(caractere) && caractere != '\n') tx = tx*10+(caractere-'0');
-    while (fMatrice.get(caractere) && caractere != '\n') ty = ty*10+(caractere-'0');
+	while (fMatrice.get(caractere) && caractere != '\n') tx = tx*10+(caractere-'0');
+	while (fMatrice.get(caractere) && caractere != '\n') ty = ty*10+(caractere-'0');
 
     long const iTx = (tx+7)/8;
     long const debut = fMatrice.tellg();
     long const tailleTheorique = ty*iTx;
-    
+
     fMatrice.seekg(0, ios::end);
-    long const tailleFichier = fMatrice.tellg()-debut;
+    long const tailleFichier = static_cast<long>(fMatrice.tellg())-debut;
     fMatrice.seekg(debut, ios::beg);
 
     if (tailleFichier < tailleTheorique)
     {
-        cerr << "fichier corrompu" << endl;
+        cout << "fichier corrompu" << endl;
         fMatrice.close();
         ty = 0;
         return;
@@ -87,6 +90,8 @@ Matrice::Matrice(string path) : tx(0), ty(0)
             {
                 ty = 0;
                 cout << "matrice corrompu, y : " << y << ", x : " << x << endl;
+				cout << tailleFichier << " " << tx << " " << ty << " " << tailleTheorique <<" " << tailleFichier << " " << fMatrice.tellg() << endl;
+				getchar();
                 return;
             }
 
@@ -237,18 +242,18 @@ uint8_t Matrice::get8(short x, short y) const
 Matrice Matrice::transposee() const
 {
     Matrice res(ty, tx);
-    short const iTy = (ty+7)/8;
+    int const iTy = (ty+7)/8;
 
-    for (short y=0; y<iTy; y++)
+    for (int y=0; y<iTy; y++)
     {
-        for (short x=0; x<tx; x++)
+        for (int x=0; x<tx; x++)
         {
-            short const iX = x%8;
+            int const iX = x%8;
             res.elements[x][y] = 0;
 
-            for (short i=0; i<8; i++)
+            for (int i=0; i<8; i++)
             {
-                short const iY = y*8+i;
+                int const iY = y*8+i;
                 if (iY<ty) res.elements[x][y] |= ((elements[iY][x/8] & (0x80 >> iX)) << iX) >> i;
             }
         }
@@ -313,8 +318,8 @@ if (j==m) cout << i << "pose probleme" << endl;
 
     int bitsNuls = 0;
     int bitsNonTrouves = 0;
-    bool isBitNonTrouve[n];
-    bool isBitInconnu[n];
+    bool *isBitNonTrouve = new bool[n];
+    bool *isBitInconnu = new bool[n];
     
     for (int i=0; i<n; i++)
     {
@@ -362,6 +367,9 @@ if (j==m) cout << i << "pose probleme" << endl;
             }
         }
     }
+
+	delete[] isBitNonTrouve;
+	delete[] isBitInconnu;
 
     cout << "erreur " << bitsNuls << " " << bitsNonTrouves << " " << nbProblemes << endl;
     return X;
@@ -448,13 +456,13 @@ Matrice::~Matrice()
 Matrice Matrice::id(short tx)
 {
     Matrice res(tx, tx);
-    short const iTx = (tx+7)/8;
+    int const iTx = (tx+7)/8;
 
-    for (short y=0; y<tx; y++)
+    for (int y=0; y<tx; y++)
     {
         res.elements[y][y/8] = 0x80 >> (y%8);
-        for (short x=0; x<y/8; x++) res.elements[y][x] = 0;
-        for (short x=y/8+1; x<iTx; x++) res.elements[y][x] = 0;
+        for (int x=0; x<y/8; x++) res.elements[y][x] = 0;
+        for (int x=y/8+1; x<iTx; x++) res.elements[y][x] = 0;
     }
 
     return res;
@@ -463,17 +471,17 @@ Matrice Matrice::id(short tx)
 Matrice Matrice::decalageGauche(short tx, short decalage)
 {
     Matrice res(tx, tx);
-    short const iTx = (tx+7)/8;
-    
-    for (short y=0; y<tx; y++)
+    int const iTx = (tx+7)/8;
+
+    for (int y=0; y<tx; y++)
     {
-        short const d = y+decalage;
+        int const d = y+decalage;
         res.elements[y][d/8] = 0x80 >> (d%8);
-        
-        for (short x=0; x<d/8; x++) res.elements[y][x] = 0;
-        for (short x=d/8+1; x<iTx; x++) res.elements[y][x] = 0;
+
+        for (int x=0; x<d/8; x++) res.elements[y][x] = 0;
+        for (int x=d/8+1; x<iTx; x++) res.elements[y][x] = 0;
     }
-    
+
     return res;
 }
 

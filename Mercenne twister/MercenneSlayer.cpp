@@ -1,3 +1,4 @@
+//#include "stdafx.h"
 #include <fstream>
 #include <iostream>
 #include "Matrice.h"
@@ -108,7 +109,7 @@ void MercenneSlayer::sEtatsSEtats(string pathEtats)
     long const tailleFEtats = fEtats.tellg();
     fEtats.seekg(0, ios::beg);
 
-    int tailleChaine = n*((w/3)+3)+1; //ln(10)/ln(2) = 3.32
+    int const tailleChaine = n*((w/3)+3)+1; //ln(10)/ln(2) = 3.32
     
     if (tailleFEtats < tailleChaine)
     {
@@ -117,7 +118,7 @@ void MercenneSlayer::sEtatsSEtats(string pathEtats)
         return;
     }
 
-    char chaine[tailleChaine];
+    char *chaine = new char[tailleChaine];
     
     if (fEtats.read(chaine, tailleChaine))
     {
@@ -142,6 +143,8 @@ void MercenneSlayer::sEtatsSEtats(string pathEtats)
     else cerr << "Error while reading file " << pathEtats << endl;
 
     fEtats.close();
+
+	delete[] chaine;
 }
 
 void MercenneSlayer::sEtats(W nombresAleatoires[])
@@ -169,7 +172,7 @@ void MercenneSlayer::sEtatSCrypy(uint8_t iNombresAleatoires[])
     int const tailleCycle = tailleIV;//tailleNom;
     int const nbFichiers = n*w/nbBitsCycle;
 
-    int nbCycles = 1+tailleIV*2;//+tailleNom*2;
+    int const nbCycles = 1+tailleIV*2;//+tailleNom*2;
     int tailleCycles[nbCycles];
     int nbBitsCycles[nbCycles];
 
@@ -232,14 +235,14 @@ void MercenneSlayer::sEtatSCrypy(uint8_t iNombresAleatoires[])
 
     //On recuperes nos etats
     Matrice matriceCrypy = matriceGeneraleCrypy(nbBitsCycles, tailleCycles, nbCycles);
-    Matrice matriceCrypyContrainte("matrices/matriceCrypyContrainte_"+to_string(0)+"_"+to_string(33)+".ms");
+    Matrice matriceCrypyContrainte("matrices/matriceCrypyContrainte_0_33.ms");
 
     if (!matriceCrypyContrainte.isOk())
     {
         cout << "Creation de la matrice contrainte" << endl;
 
         matriceCrypyContrainte = matriceCrypy*contraintes;
-        matriceCrypyContrainte.exporter("matrices/matriceCrypyContrainte_"+to_string(0)+"_"+to_string(33)+".ms");
+        matriceCrypyContrainte.exporter("matrices/matriceCrypyContrainte_0_33.ms");
     }
 
     Matrice iEtats = (contraintes*matriceCrypyContrainte.inverser(nombresAleatoires)).transposee();
@@ -298,18 +301,19 @@ Matrice MercenneSlayer::matriceGeneraleCrypy(int nbBitsCycles[], int tailleCycle
     for (int i=0; i<nbCycles; i++) tailleGrandCycle += tailleCycles[i];
 
     int const nbGrandsCycles = n*w/nbBitsUtilesCycle+1;
-    string const nomRes = "matrices/matriceCrypy_"+to_string(decalage)+"_"+to_string(nbGrandsCycles)+"_"+to_string(nbBitsUtilesCycle)+".ms";
+    string const nomRes = "matrices/matriceCrypy_"+to_string(static_cast<long long>(decalage))+"_"+to_string(static_cast<long long>(nbGrandsCycles))+"_"+to_string(static_cast<long long>(nbBitsUtilesCycle))+".ms";
 
     Matrice matriceCrypy(nomRes);
     if (matriceCrypy.isOk()) return matriceCrypy;
 
-    cout << "Création de " << nomRes << endl;
+    cout << "Creation de " << nomRes << endl;
 
     //On construit la premiere partie de la matrice
     cout << "Creation de la matrice en cours : 0%" << endl;
 
     Matrice res(tx, ty);
     Matrice E = matriceExtraction();
+
 /*
     Matrice E1 = matriceExtraction().bloc(0, 0, w, nbBitsEtatPetitCycle1);
     Matrice E2 = matriceExtraction().bloc(0, 0, w, nbBitsEtatPetitCycle2);
@@ -362,7 +366,7 @@ Matrice MercenneSlayer::matriceGeneraleCrypy(int nbBitsCycles[], int tailleCycle
     suivant1.coller(idW, w*m, 0, txSuivant1, w);
 
     int const nbSuivants = nbGrandsCycles*tailleGrandCycle+decalage-n;
-    Matrice suivants[nbSuivants];
+    Matrice *suivants = new Matrice[nbSuivants];
 
     for (int i=0; i<n-m; i++)
     {
@@ -392,7 +396,7 @@ Matrice MercenneSlayer::matriceGeneraleCrypy(int nbBitsCycles[], int tailleCycle
     {
         if (i%50 == 0) cout << "Creation de la matrice en cours : " << 100.0*i/nbSuivants << "%" << endl;
 
-        string nomEtat = "etats/etat_"+to_string(i);
+        string nomEtat = "etats/etat_"+to_string(static_cast<long long>(i));
         suivants[i] = Matrice(nomEtat);
 
         if (!suivants[i].isOk())
@@ -432,6 +436,8 @@ Matrice MercenneSlayer::matriceGeneraleCrypy(int nbBitsCycles[], int tailleCycle
 
     res.exporter(nomRes);
     cout << "Creation de la matrice terminee" << endl;
+
+	delete[] suivants;
 
     return res;
 }
@@ -542,9 +548,9 @@ void MercenneSlayer::tester()
     mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
     mercenneSlayer.randint(0, 255);
 
-    int nbCycles = 1+tailleIV*2;//+tailleNom*2;
-    int tailleCycles[nbCycles];
-    int nbBitsCycles[nbCycles];
+    int const nbCycles = 1+tailleIV*2;//+tailleNom*2;
+    int *tailleCycles = new int[nbCycles];
+    int *nbBitsCycles = new int[nbCycles];
 
     tailleCycles[0] = tailleCle*2+tailleNom*2;
     nbBitsCycles[0] = 0;
@@ -621,6 +627,9 @@ return;
     Matrice randintsMatriceT = randintsMatrice.transposee();
     Matrice nombresAleatoiresT = nombresAleatoires.transposee();
 
+	delete[] tailleCycles;
+	delete[] nbBitsCycles;
+
     cout << "randint trouves avec matrice " << endl << randintsMatriceT.hexa() << endl;
 
     for (i=0; i<nbOctetsAleatoires; i++) if (randintsMatriceT.get8(i, 0) != nombresAleatoiresT.get8(i, 0)) break;
@@ -671,12 +680,12 @@ return;
 
 
     //Test de l'inversion
-    Matrice matriceCrypyContrainte("matrices/matriceCrypyContrainte_"+to_string(decalage)+"_"+to_string(nbCycles)+".ms");
+    Matrice matriceCrypyContrainte("matrices/matriceCrypyContrainte_"+to_string(static_cast<long long>(decalage))+"_"+to_string(static_cast<long long>(nbCycles))+".ms");
 
     if (!matriceCrypyContrainte.isOk())
     {
         matriceCrypyContrainte = matriceCrypy*contraintes;
-        matriceCrypyContrainte.exporter("matrices/matriceCrypyContrainte_"+to_string(decalage)+"_"+to_string(nbCycles)+".ms");
+        matriceCrypyContrainte.exporter("matrices/matriceCrypyContrainte_"+to_string(static_cast<long long>(decalage))+"_"+to_string(static_cast<long long>(nbCycles))+".ms");
     }
 
     Matrice etatsRetrouves = contraintes*(matriceCrypyContrainte.inverser(randintsMatrice));

@@ -1,6 +1,8 @@
 #ifndef MERCENNE_SLAYER_H
 #define MERCENNE_SLAYER_H
 
+//#include "../cryptopp810/test111/stdafx.h"
+#include "utile.h"
 #include <string>
 
 class Matrice;
@@ -12,7 +14,7 @@ using namespace std;
 class MercenneSlayer
 {
     public:
-        MercenneSlayer(short w, short n, short m, short r, W a, short u, W d, short s, W b, short t, W c, short l);
+        MercenneSlayer(short w, short n, short m, short r, W a, short u, uint32_t d, short s, W b, short t, W c, short l);
         void sEtatSCrypy(uint8_t nombreAleatoires[]);
         void sEtats(double iNombreAleatoires[]);
         void sEtatsSEtats(string pathEtats);
@@ -62,7 +64,7 @@ class MercenneSlayer
         short position;
 };
 
-export double randomPython(uint32_t nombreInitial1, uint32_t nombreInitial2);
+double randomPython(uint32_t nombreInitial1, uint32_t nombreInitial2);
 
 template<typename T>
 T inverserGauche(T x, T masque, short decalage)
