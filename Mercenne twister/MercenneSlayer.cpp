@@ -166,31 +166,37 @@ void MercenneSlayer::sEtatSCrypy(uint8_t iNombresAleatoires[])
     int const nbBitsIV = tailleIV*nbBitsEtatIV;
     int const nbBitsNom = tailleNom*nbBitsEtatNom;
     int const nbBitsCycle = nbBitsIV+nbBitsNom;
-    int const tailleCycle = tailleNom+tailleIV;
+    int const tailleCycle = tailleIV;//tailleNom;
     int const nbFichiers = n*w/nbBitsCycle;
 
-    int nbCycles = 168;
+    int nbCycles = 1+tailleIV*2;//+tailleNom*2;
     int tailleCycles[nbCycles];
     int nbBitsCycles[nbCycles];
 
-    tailleCycles[0] = tailleCle*2;
+    tailleCycles[0] = tailleCle*2+tailleNom*2;
     nbBitsCycles[0] = 0;
 
-    for (int i=1; i<168; i++)
+    for (int i=1; i<nbCycles; i++)
     {
         tailleCycles[i] = 1;
     }
-
+/*
     for (int i=0; i<tailleNom*2; i++)
     {
         nbBitsCycles[i] = nbBitsEtatNom;
+    }*/
+
+    for (int i=1; i<nbCycles; i++)
+    {
         nbBitsCycles[i] = nbBitsEtatIV;
     }
 
-    cout << "randintCry" << endl << Matrice(iNombresAleatoires, (nbFichiers+1)*tailleCycle*8).hexa() << endl;
-exit(0);
-    Matrice nombresAleatoires(1, n*w);
+    //cout << "randintCry" << endl << Matrice(iNombresAleatoires, (nbFichiers+1)*tailleCycle*8).hexa() << endl;
 
+    Matrice nombresAleatoires(iNombresAleatoires, n*w);//(1, n*w);
+    
+    cout << nombresAleatoires.hexa() << endl;
+/*
     for (short i=0; i<nbFichiers; i++)
     {
         nombresAleatoires.coller(Matrice(iNombresAleatoires+i*tailleCycle, nbBitsEtatNom), 0, nbBitsCycle*i, 1, nbBitsCycle*i+nbBitsEtatNom);
@@ -205,10 +211,38 @@ exit(0);
         
         if (nbBitsRestants > nbBitsNom) nombresAleatoires.coller(Matrice(iNombresAleatoires+nbFichiers*tailleCycle+tailleNom, nbBitsEtatNom), 0, nbFichiers*nbBitsCycle+nbBitsEtatNom, 1, n*w);
     }
-
+*/
     cout << nombresAleatoires.hexa() << endl;
 
-    Matrice iEtats = matriceGeneraleCrypy(tailleCycles, nbBitsCycles, nbCycles).inverser(nombresAleatoires).transposee();
+    //On ajoute des contraintes
+    int const finReferences = 623*32;
+    Matrice contraintes(finReferences+1, 624*32);
+    contraintes.coller(Matrice::id(finReferences), 0, 0, finReferences, finReferences); //Les n-1 premiers etats servent de reference
+
+    Matrice A(w, w);
+    A.coller(Matrice::id(w-1), 0, 1, w-1, w);
+    A.coller(Matrice(intToChar(a), w), w-1, 0, w, w);
+
+    Matrice iPassage(623*32+1, 32);
+    iPassage.coller(Matrice::id(31), 1, 1, 32, 32);
+    iPassage.set(623*32, 0, 1);
+    
+    contraintes.coller(A*iPassage, 0, finReferences, finReferences+1, 624*32);
+    contraintes.coller(Matrice::id(32), (397-1)*32, finReferences, 397*32, 624*32);
+
+    //On recuperes nos etats
+    Matrice matriceCrypy = matriceGeneraleCrypy(nbBitsCycles, tailleCycles, nbCycles);
+    Matrice matriceCrypyContrainte("matrices/matriceCrypyContrainte_"+to_string(0)+"_"+to_string(33)+".ms");
+
+    if (!matriceCrypyContrainte.isOk())
+    {
+        cout << "Creation de la matrice contrainte" << endl;
+
+        matriceCrypyContrainte = matriceCrypy*contraintes;
+        matriceCrypyContrainte.exporter("matrices/matriceCrypyContrainte_"+to_string(0)+"_"+to_string(33)+".ms");
+    }
+
+    Matrice iEtats = (contraintes*matriceCrypyContrainte.inverser(nombresAleatoires)).transposee();
 
     cout << iEtats.hexa() << endl;
 
@@ -256,42 +290,25 @@ Matrice MercenneSlayer::matriceGeneraleCrypy(int nbBitsCycles[], int tailleCycle
 {
     int const ty = n*w;
     int const tx = n*w;
-    int const decalage = 0;   //Nombre d'extraction entre l'etat interne originel et le debut de Crypy. Doit etre un multiple de 2 a cause de random()
+    int const decalage = 0;    //Nombre d'extraction entre l'etat interne originel et le debut de Crypy. Doit etre un multiple de 2 a cause de random()
     int tailleGrandCycle = 0;
     int nbBitsUtilesCycle = 0;
 
     for (int i=1; i<nbCycles; i+=2) nbBitsUtilesCycle += nbBitsCycles[i]*tailleCycles[i];
     for (int i=0; i<nbCycles; i++) tailleGrandCycle += tailleCycles[i];
 
-/*
-    int const taillePetitCycle1 = 36;
-    int const taillePetitCycle2 = 16;
-    int const debutPetitCycle = 32*2;
-    int const nbBitsEtatPetitCycle1 = 5;
-    int const nbBitsEtatPetitCycle2 = 8;
-    int const nbBitsPetitCycle1 = nbBitsEtatPetitCycle1*taillePetitCycle1;
-    int const nbBitsPetitCycle2 = nbBitsEtatPetitCycle2*taillePetitCycle2;
-    int const nbBitsPetitCycle = nbBitsPetitCycle1+nbBitsPetitCycle2;
-
-    int const taillePetitCycle = (taillePetitCycle1+taillePetitCycle2)*2;
-    int const tailleGrandCycle = debutPetitCycle+taillePetitCycle;
-*/
     int const nbGrandsCycles = n*w/nbBitsUtilesCycle+1;
-
     string const nomRes = "matrices/matriceCrypy_"+to_string(decalage)+"_"+to_string(nbGrandsCycles)+"_"+to_string(nbBitsUtilesCycle)+".ms";
-
-cout << " " << tailleGrandCycle << " " << nbBitsUtilesCycle << " " << nbGrandsCycles << endl;
 
     Matrice matriceCrypy(nomRes);
     if (matriceCrypy.isOk()) return matriceCrypy;
 
-    cout << "So we need to rebuild it" << endl;
+    cout << "Création de " << nomRes << endl;
 
     //On construit la premiere partie de la matrice
     cout << "Creation de la matrice en cours : 0%" << endl;
 
     Matrice res(tx, ty);
-
     Matrice E = matriceExtraction();
 /*
     Matrice E1 = matriceExtraction().bloc(0, 0, w, nbBitsEtatPetitCycle1);
@@ -321,22 +338,6 @@ cout << " " << tailleGrandCycle << " " << nbBitsUtilesCycle << " " << nbGrandsCy
 
             debutEtat += tailleCycles[j];
         }
-        /*
-        for (int j=0; j<taillePetitCycle1; j++)
-        {
-            int const nEquation = i*nbBitsPetitCycle+j*nbBitsEtatPetitCycle1;
-            int const nBitEtat = (i*tailleGrandCycle+debutPetitCycle+j*2+decalage)*w;
-
-            if (nBitEtat < tx) res.coller(E1, nBitEtat, nEquation, nBitEtat+w, nEquation+nbBitsEtatPetitCycle1);
-        }
-
-        for (int j=0; j<taillePetitCycle2; j++)
-        {
-            int const nEquation = i*nbBitsPetitCycle+nbBitsPetitCycle1+j*nbBitsEtatPetitCycle2;
-            int const nBitEtat = (i*tailleGrandCycle+debutPetitCycle+taillePetitCycle1*2+j*2+decalage)*w;
-
-            if (nBitEtat < tx) res.coller(E2, nBitEtat, nEquation, nBitEtat+w, nEquation+nbBitsEtatPetitCycle2);
-        }*/
     }
 
     //On construit les autres morceaux de la matrice
@@ -427,22 +428,6 @@ cout << " " << tailleGrandCycle << " " << nbBitsUtilesCycle << " " << nbGrandsCy
 
             debutEtat += tailleCycles[j];
         }
-        /*
-        for (int j=0; j<taillePetitCycle1; j++)
-        {
-            int const nEquation = i*nbBitsPetitCycle+j*nbBitsEtatPetitCycle1;
-            int const nEtat = decalage-n+i*tailleGrandCycle+debutPetitCycle+j*2;
-
-            if (nEquation < ty && nEtat >= 0) res.coller(E1*suivants[nEtat], 0, nEquation, tx, min(nEquation+nbBitsEtatPetitCycle1, ty));
-        }
-
-        for (int j=0; j<taillePetitCycle2; j++)
-        {
-            int const nEquation = i*nbBitsPetitCycle+j*nbBitsEtatPetitCycle2+nbBitsPetitCycle1;
-            int const nEtat = decalage-n+i*tailleGrandCycle+debutPetitCycle+taillePetitCycle1*2+j*2;
-
-            if (nEquation < ty && nEtat >= 0) res.coller(E2*suivants[nEtat], 0, nEquation, tx, min(nEquation+nbBitsEtatPetitCycle2, ty));
-        }*/
     }
 
     res.exporter(nomRes);
@@ -539,7 +524,7 @@ void MercenneSlayer::tester()
     //Tests matrice generale crypy
     int const w = 32;
     int const n = 624;
-    int const decalage = 0;//25*n;
+    int const decalage = 4;//25*n;
     int const tailleIV = 16;
     int const tailleNom = 36;
     int const tailleCle = 32;
@@ -601,7 +586,7 @@ void MercenneSlayer::tester()
     }
 
     cout << "iNombresAleatoires" << endl << Matrice(iNombresAleatoires, nbNombresAleatoires*8).hexa() << endl;
-//return;
+return;
     //Construction de la matrice de nombre aleatoires
 
     Matrice nombresAleatoires(iNombresAleatoires, n*w);//(1, 624*32);

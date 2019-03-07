@@ -33,14 +33,14 @@ CrypyRecover::CrypyRecover(string pathRacine)
     nbBitsNom = tailleNom*nbBitsEtatNom;
     pathDechiffre = "tests/fichiers_crypy_dechiffres/";
 
-    int const tailleCycle = tailleNom+tailleIV;
-    int const nbFichiersNecessaires = 624*32/(nbBitsIV+nbBitsNom)+1;
-    int const nbNombresAleatoires = nbFichiersNecessaires*(tailleNom+tailleIV);
+    int const tailleCycle = tailleIV;//+tailleNom;
+    int const nbFichiersNecessaires = 1+624*32/(nbBitsIV);//+nbBitsNom);
+    int const nbNombresAleatoires = nbFichiersNecessaires*tailleCycle;;
 
-    MercenneSlayer::tester();
+    //MercenneSlayer::tester();
 
     nbFichiers = nbElementsDans(pathRacine);
-    
+
     if (nbFichiers < nbFichiersNecessaires)
     {
         cout << "Pas assez de fichiers chiffres" << endl;
@@ -51,19 +51,24 @@ CrypyRecover::CrypyRecover(string pathRacine)
     uint8_t nombresAleatoires[nbNombresAleatoires];
     fichiers = fichiersEtDossiersDans(pathRacine);
 
+/*
     for (int i=0; i<nbFichiersNecessaires; i++)
     {
         nomToBits(fichiers[i], nombresAleatoires+i*tailleCycle);
         recupererIv(fichiers[i], nombresAleatoires+i*tailleCycle+tailleNom);
     }
+*/
 
+    for (int i=0; i<nbFichiersNecessaires; i++) recupererIv(fichiers[i], nombresAleatoires+i*tailleCycle);
+
+/*
     cout << hex << (long)(1.0/62*4294967296) << hex << endl;
     cout << " test " << randomPython(0x04210842, 0x00000000)*62 << " " << randomPython(0x08FFFFFF, 0xFFFFFFFF)*62 << endl;
     cout << " test " << randomPython(0xa8000000, 0)*256 << " " << (int)(randomPython(0xa8FFFFFF, 0xFFFFFFFF)*256) << endl;
     cout << " test " << randomPython(0xa9000000, 0)*256 << " " << randomPython(0xa9FFFFFF, 0xFFFFFFFF)*256 << endl;
 
     for (short i=0; i<62; i++) cout << i << " " << hex << (long)(i/62.0*4294967296) << endl;
-return;
+*/
 
     //On en deduit les cles utilisees
     mercenneSlayer.sEtatSCrypy(nombresAleatoires);

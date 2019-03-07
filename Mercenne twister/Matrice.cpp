@@ -207,7 +207,7 @@ Matrice Matrice::operator*(Matrice const &A) const
 
             }
         }
-        if (y%100 == 0) cout << y << endl;
+        //if (y%100 == 0) cout << y << endl;
     }
 
     return res;
