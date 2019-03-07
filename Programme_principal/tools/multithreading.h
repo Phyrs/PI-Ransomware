@@ -15,7 +15,7 @@
 
 #define MAX_THREAD_COUNT 1
 #define BUFFER_SIZE 1000000
-#define ANALYZERS_NUMBER 3
+#define ANALYZERS_NUMBER 4
 
 using namespace std;
 

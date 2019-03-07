@@ -43,14 +43,14 @@ short getUserChoice(){
 	return  choice;
 }
 
-string askUserForPath(){
+string askUserForPath(string text){
 	bool isPathADir = false;
 	string path;
-	getline(cin,path);
+	fflush(stdin);
 	do{
-		printf("\n Please enter a specific path (to a directory) to consider (Enter C:/ to analyze the whole disk) :\n");
-		cin.clear();
+		printf(text.c_str());
 		getline(cin,path);
+		cin.clear();
 		isPathADir = isADirectory(path);
 	} while (!isPathADir);
 	return path;
@@ -106,8 +106,9 @@ short askUserForRecoveryTool(){
 	short id = -1;
 	do{
 		printf("\n Please select a recovery tool among the following :\n");
-		printf(" 1 - Vipasana Recovery tool (require a plain and a ciphered text)\n");
-		printf(" 2 - HiddenTear Recovery tool (require the 15 bytes password from a .pcap analysis or a bruteforce attack)\n");
+		printf(" 1 - Vipasana Recovery tool (requires a plain and a ciphered text)\n");
+		printf(" 2 - HiddenTear Recovery tool (requires the 15 bytes password from a .pcap analysis or a bruteforce attack)\n");
+		printf(" 3 - CryPy Recovery tool (requires CryPy's ciphered files folder's path)\n");
 		cin.clear();
 		cin >> id;
 		if(cin.fail()){

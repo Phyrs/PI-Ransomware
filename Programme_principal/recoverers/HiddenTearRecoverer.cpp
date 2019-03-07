@@ -6,8 +6,8 @@
 
 using namespace std;
 
-const char *HiddenTearRecoverer::EXE_PATH = "C:\\hidden_tear\\HiddenTearNetworkAtk.exe";
-const char *HiddenTearRecoverer::EXE_PATH2 = "C:\\hidden_tear\\HiddenTearBruteforce.exe";
+const char *HiddenTearRecoverer::EXE_PATH = "\"C:\\Documents and Settings\\Administrateur\\Bureau\\librairies\\HiddenTearNetworkAtk.exe\"";
+const char *HiddenTearRecoverer::EXE_PATH2 = "\"C:\\Documents and Settings\\Administrateur\\Bureau\\librairies\\HiddenTearBruteforce.exe\"";
 
 HiddenTearRecoverer::HiddenTearRecoverer(string pass)
 {
