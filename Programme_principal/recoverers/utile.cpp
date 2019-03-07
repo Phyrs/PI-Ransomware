@@ -7,11 +7,6 @@
 #include <string.h>
 #include <math.h>
 
-namespace BABA{
-// Contains windows API functions & structures
-#include <Windows.h>
-}
-
 string executer(string commande)
 {
     char iRes[1024];
@@ -23,6 +18,87 @@ string executer(string commande)
     pclose(pipe);
 
     return res;
+}
+
+//https://github.com/floyernick/fleep-py/blob/master/fleep/__init__.py
+string getExtension(string path)
+{
+    ifstream fExtensions;
+    int const nbExtensions = 100;
+
+	fExtensions.open("extensions.json");
+	
+	if (!fExtensions)
+	{
+	    cout << "erreur extensions non trouvees" << endl;
+	    fExtensions.close();
+	    return "";
+	}
+
+	fExtensions.seekg(0, ios::beg);
+	
+	char caractere;
+	int offset[nbExtensions];
+	string extensions[nbExtensions];
+    uint8_t *signature[nbExtensions];
+    int taillesSignatures[nbExtensions];
+
+    for (int i=0; i<nbExtensions; i++)
+    {
+    	extensions[i] = "";
+	    for (int j=0; j<7; j++) while (fExtensions.get(caractere) && caractere != '"');
+	    while (fExtensions.get(caractere) && caractere != '"') extensions[i] += caractere;
+
+        offset[i] = 0;
+	    for (int j=0; j<6; j++) while (fExtensions.get(caractere) && caractere != '"');
+	    fExtensions.get(caractere);
+	    fExtensions.get(caractere);
+	    
+	    while (fExtensions.get(caractere) && caractere != ',') offset[i] = offset[i]*10+(caractere-'0');
+
+	    taillesSignatures[i] = 0;
+	    for (int j=0; j<3; j++) while (fExtensions.get(caractere) && caractere != '"');
+	    long debut = fExtensions.tellg();
+	    fExtensions.get(caractere);
+
+	    while (caractere != '"')
+	    {
+	        while (fExtensions.get(caractere) && caractere != ' ' && caractere != '"');
+	        taillesSignatures[i]++;
+	    }
+
+        fExtensions.seekg(debut, fExtensions.beg);
+        signature[i] = new uint8_t[taillesSignatures[i]];
+
+		for (int j=0; j<taillesSignatures[i]; j++)
+	    {
+	        string iSignature = "";
+	        while (fExtensions.get(caractere) && caractere != ' ' && caractere != '"') iSignature += caractere;
+
+	        signature[i][j] = strtol(iSignature.c_str(), NULL, 16);
+	    }
+	    
+	    while (fExtensions.get(caractere) && caractere != '}');
+	}
+	
+	fExtensions.close();
+
+    ifstream fichier;
+	fichier.open(path.c_str(), ios::binary);
+
+	for (int i=0; i<nbExtensions; i++)
+	{
+	    int j = 0;
+	    fichier.seekg(offset[i], ios::beg);
+
+	    while (j < taillesSignatures[i] && fichier.get(caractere) && static_cast<uint8_t>(caractere) == signature[i][j]) j++;
+	    
+	    if (j == taillesSignatures[i]) return extensions[i];
+	}
+	
+	fichier.close();
+	
+	return "txt";
 }
 
 long nbElementsDans(string path)
@@ -88,7 +164,7 @@ string* fichiersEtDossiersDans(string path)
 			HANDLE hFile = CreateFile(wstring(fichier.begin(), fichier.end()).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
 				                      FILE_ATTRIBUTE_NORMAL, NULL);
 
-			GetFileTime(hFile, &dateFichiers[nFichier], NULL, NULL);
+			GetFileTime(hFile, NULL, NULL, &dateFichiers[nFichier]);
 			if (hFile == INVALID_HANDLE_VALUE) continue;
 
 			res[nFichier] = fichier;

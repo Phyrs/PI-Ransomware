@@ -70,9 +70,6 @@ CrypyRecover::CrypyRecover(string pathRacine)
     uint8_t *nombresAleatoires = new uint8_t[nbNombresAleatoires];
     fichiers = fichiersEtDossiersDans(pathRacine);
 
-	for(int i = 0; i < nbFichiers ; i++)
-		cout << fichiers[i] << "\n";
-
 /*
     for (int i=0; i<nbFichiersNecessaires; i++)
     {
@@ -94,7 +91,7 @@ CrypyRecover::CrypyRecover(string pathRacine)
 
     //On en deduit les cles utilisees
     mercenneSlayer.sEtatSCrypy(nombresAleatoires);
-    //mercenneSlayer.sEtatsSEtats("tests/exempleEtat");
+    //mercenneSlayer.sEtatsSEtats("C:\\exempleEtat");
 
     keys = new string[nbFichiers];
     for (int i=0; i<nbFichiers; i++) keys[i] = generateKey();
@@ -146,7 +143,14 @@ void CrypyRecover::decipher(string path) const
 {
     //On recupere le numero du fichier pour connaitre sa cle
     long nFichier = 0;
-    while (fichiers[nFichier] != path && nFichier < nbFichiers) nFichier++;
+
+	replace(path.begin(), path.end(), '/', '\\');
+
+	replace(fichiers[nFichier].begin(), fichiers[nFichier].begin()+1, fichiers[nFichier].at(0), path.at(0));
+    while (fichiers[nFichier] != path && nFichier < nbFichiers) {
+		nFichier++;
+		replace(fichiers[nFichier].begin(), fichiers[nFichier].begin()+1, fichiers[nFichier].at(0), path.at(0));
+	}
     
     if (nFichier == nbFichiers)
     {
@@ -178,6 +182,8 @@ void CrypyRecover::decipher(string path) const
     byte iKey[32];
     for (short i=0; i<32; i++) iKey[i] = static_cast<uint8_t>(key[i]);
 
+	string pathNouveau = pathDechiffre+SEPARATEUR+"fichier"+to_string(static_cast<long long>(nFichier));
+
     ofstream fNouveau;
     fNouveau.open((pathDechiffre+"fichier"+to_string(static_cast<long long>(nFichier))).c_str(), ios::binary);
 
@@ -203,6 +209,7 @@ void CrypyRecover::decipher(string path) const
 
     fichier.close();
     fNouveau.close();
+	rename(pathNouveau.c_str(), (pathNouveau+"."+getExtension(pathNouveau)).c_str());
 }
 
 string CrypyRecover::generateKey()

@@ -24,6 +24,7 @@ using namespace std;
 
 void testFichier();
 string executer(string commande);
+string getExtension(string path);
 long nbElementsDans(string path);
 ifstream loadFile(char const *path);
 string* fichiersEtDossiersDans(string path);

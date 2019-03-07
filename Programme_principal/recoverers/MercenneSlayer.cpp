@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Matrice.h"
 #include "MercenneSlayer.h"
+#include "utile.h"
 
 double randomPython(uint32_t nombreInitial1, uint32_t nombreInitial2)
 {
