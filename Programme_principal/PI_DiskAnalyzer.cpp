@@ -186,6 +186,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			break;
 	}
 
+	printf("End of program...\n");
     while(1);
 	return 0;
 }

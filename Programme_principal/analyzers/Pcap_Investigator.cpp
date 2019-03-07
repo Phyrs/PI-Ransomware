@@ -97,11 +97,11 @@ int packet_analyzer_hidden_tear(const u_char* data){
 				// Aborted: piece of code that compare targetted message with current Machine and User name (cf problem: only work on infected computer)
 				if(strncmp((char*)data, "GET ", 4)==0){
 					data+= 4;
-					data= (u_char*)strstr((char*)data, "?files=");
-					if(data!=NULL){
+					//data= (u_char*)strstr((char*)data, "?files=");
 						// i: get length of message
-						data+= 7;
-						u_char* data_= (u_char*)strstr((char*)data, " HTTP/1.1");
+						//data+= 7;
+					u_char* data_= (u_char*)strstr((char*)data, " HTTP/1.1");
+					if(data_!=NULL){
 						int urlencoded_len= data_ - data;
 						// ii: is there a candidat for an Hidden-Tear password (i.e. string ends with %20 followed by 15 characters, with some potentially url-encoded)
 						char* urlencoded= new char[urlencoded_len];
@@ -165,8 +165,8 @@ void pcap_process_hidden_tear(pcap_t* pcap){
 	printf("Searching for Hidden Tear password...\n");
 	struct bpf_program filter_code;
 	// Create filter according to current usage (only keep tcp packets)
-	pcap_compile(pcap, &filter_code, "ip and tcp", 1, 0);
-	pcap_setfilter(pcap, &filter_code);
+	//pcap_compile(pcap, &filter_code, "ip and tcp", 1, 0);
+	//pcap_setfilter(pcap, &filter_code);
  
 	// PARSE PACKETS -------------------------------------------------------------------------
 
