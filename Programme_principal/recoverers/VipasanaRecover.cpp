@@ -137,7 +137,7 @@ long VipasanaRecover::pFin(ifstream &file) const
 string VipasanaRecover::name(ifstream &file) const
 {
     //On se place au debut du nom
-    char byte;
+    char byte = 'a';
     file.seekg(pFin(file), ios_base::beg);
 
     for (short i=0; i<5; i++) 

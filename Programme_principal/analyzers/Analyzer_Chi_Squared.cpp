@@ -46,6 +46,10 @@ void AnalyzerChiSquared::analyzer_compute(){
 
 	double t_stat = (a_bytes_count - 1) * (sample_sd / model_sd) * (sample_sd / model_sd);  // test statistic
 
+	if(a_bytes_count < 2){
+		a_result= 0;
+		return;
+	}
 	chi_squared dist(a_bytes_count - 1); // chi-squared distribution
 	double ucv2 = quantile(complement(dist, a_p_value/2)); // upper quantile
 	double lcv2 = quantile(dist, a_p_value/2); // lower quantile

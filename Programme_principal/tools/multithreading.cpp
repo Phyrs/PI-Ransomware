@@ -56,8 +56,7 @@ std::ifstream::pos_type filesize(const char* filename)
  */
 DWORD WINAPI file_analysis( LPVOID file_data ){
     THREAD_DATA* td= ((THREAD_DATA*)file_data);
-    
-	// TODO: init all analyzers
+    	
 	Analyzer *tabAnalyzers[ANALYZERS_NUMBER];
 	tabAnalyzers[0] = new AnalyzerChiSquared(td->file_path);
 	tabAnalyzers[1] = new AnalyzerVipasana(td->file_path, (int)filesize(td->file_path));
@@ -72,6 +71,26 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 	}
 	// Open the file and process its bytes
 	ifstream file(td->file_path, ios::binary);
+
+	// If we can not open the file, just stop the thread.
+	if(!file.good()){
+		// Wait for the write operation to be secure
+		WaitForSingleObject( 
+				WRITE_MUTEX,    // handle to mutex
+				INFINITE);      // no time-out interval
+
+		detailed_report_file << "\Unable to open ";
+		detailed_report_file <<	td->file_path;
+		detailed_report_file << "\n\n";
+		ReleaseMutex(WRITE_MUTEX); 
+		td->thread_id= -1;
+		// Tells the main process that the current THREAD_DATA can be allocated to another thread
+		ReleaseSemaphore(THREAD_COUNT_SEMAPHORE, // handle to semaphore
+						 1,                      // increase count by one
+						 NULL);                  // not interested in previous count
+		return 0;
+	}
+
 	file.clear();
 	do{
 		cursorpos = file.tellg();
@@ -90,7 +109,7 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 		process = false;
 	}while(!file.eof());
 	file.close();
-	
+
 	for(int j = 0; j < ANALYZERS_NUMBER; j++){
 		tabAnalyzers[j]->analyzer_compute();
 	}
@@ -99,23 +118,6 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
 	WaitForSingleObject( 
             WRITE_MUTEX,    // handle to mutex
             INFINITE);      // no time-out interval
-
-	/*printf("\nResults for %s : \n", td->file_path);
-	for(int j = 0; j < ANALYZERS_NUMBER; j++){
-		tabAnalyzers[j]->analyzer_result();
-	}
-
-	for(int j = ANALYZERS_NUMBER-1; j >= 0; j--){
-		if(tabAnalyzers[j]->is_ciphered_by_ransomware()){
-			string name = tabAnalyzers[j]->get_ransomware_name();
-			name.append("|");
-			name.append(td->file_path);
-			name.append("\n");
-
-			ciphered_files_path.push_back(name);
-			break;
-		}
-	}*/
 
 	detailed_report_file << "\nResults for ";
 	detailed_report_file <<	td->file_path;
@@ -144,6 +146,10 @@ DWORD WINAPI file_analysis( LPVOID file_data ){
     ReleaseSemaphore(THREAD_COUNT_SEMAPHORE, // handle to semaphore
 					 1,                      // increase count by one
                      NULL);                  // not interested in previous count
+
+	delete tabAnalyzers[0];
+	delete tabAnalyzers[1];
+	delete tabAnalyzers[2];
 	return 0;
 }
 
@@ -205,6 +211,11 @@ void end_threading(){
 }
 
 void launch_thread(const char *file_path){
+
+	if(strlen(file_path) >= MAX_PATH){
+		return;
+	}
+
 	// Wait if MAX_THREAD_COUNT are already running
 		WaitForSingleObject(THREAD_COUNT_SEMAPHORE,   // handle to semaphore
 							INFINITE);                // zero-second time-out interval

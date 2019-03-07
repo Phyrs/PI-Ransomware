@@ -1,73 +1,139 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Security;
-using System.Net;
-using Microsoft.Win32;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 
 namespace HiddenTearConsole
 {
     class Program
     {
+        const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890*!=&?&/";
+        static byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+        static int NUMBER_THREAD = 8;
+        static int THREAD_COUNT = 0;
+        static System.Threading.Thread[] thread_tab = new System.Threading.Thread[NUMBER_THREAD];
+
         static void Main(string[] args)
         {
-            if(args.Length != 2)
+            if(args.Length != 4)
             {
-                Console.WriteLine("usage : pgm.exe <plain_text_path> <ciphered_text_path>\n");
+                Console.WriteLine("usage : pgm.exe <plain_text_path> <ciphered_text_path> <time_in_seconds_to_bruteforce> <number_of_threads>\n");
                 Console.ReadLine();
                 Environment.Exit(1);
             }
 
             string plainpath = args[0];
             string path = args[1];
-            
+            int bruteforceLimit = int.Parse(args[2]);
+            NUMBER_THREAD = int.Parse(args[3]);
+
+
             string draftdata = " ";
-            var timestamp = File.GetLastWriteTime(path) - DateTime.Now.AddMilliseconds(-Environment.TickCount);
-            int ms = (int)timestamp.TotalMilliseconds;
             int count = 0;
             string password = "";
-            int diff = 0;
-            int i = 0;
+
             string data = System.Text.Encoding.UTF8.GetString(File.ReadAllBytes(plainpath));
-            while (data != draftdata && count < 500)
-            {
-                password = CreatePassword(15, ms - diff);
-                Console.WriteLine("Trying: " + password + " " + "Count: " + count);
-                byte[] bytesToBeDecrypted = File.ReadAllBytes(path);
-                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                passwordBytes = SHA256.Create().ComputeHash(passwordBytes);
-                byte[] bytesDecrypted = AES_Decrypt(bytesToBeDecrypted, passwordBytes);
-                draftdata = System.Text.Encoding.UTF8.GetString(bytesDecrypted);
-                diff++;
-                count++;
-                i++;
+            byte[] bytesToBeDecrypted = File.ReadAllBytes(path);
+
+            Boolean found = false;
+            string passres = "";
+            int countres = -1;
+
+            while (count <= bruteforceLimit*1000)
+            {   
+                // Waiting for empty thread slot
+                while(THREAD_COUNT == NUMBER_THREAD && !found)
+                {
+                    for (int i = 0; i < NUMBER_THREAD; i++)
+                    {
+                        if (thread_tab[i] != null && !thread_tab[i].IsAlive)
+                            THREAD_COUNT--;
+                    }
+                }
+
+                if (found)
+                {
+                    break;
+                }
+
+                int countForThread = count;
+                System.Threading.Thread thread = new System.Threading.Thread( () =>
+                {
+                    // variables
+                    int start = countForThread;
+                    Console.WriteLine("Testing range {" + start + " - " + (start + 1000) + "]");
+                    for(int i = start; i < start + 1000; i++)
+                    {
+                        string passwordThread = CreatePassword(15, i);
+                        byte[] passwordBytes = Encoding.UTF8.GetBytes(passwordThread);
+                        passwordBytes = SHA256.Create().ComputeHash(passwordBytes);
+                        byte[] bytesDecrypted = AES_Decrypt(bytesToBeDecrypted, passwordBytes);
+                        string draftdataThread = System.Text.Encoding.UTF8.GetString(bytesDecrypted);
+
+                        if (data == draftdataThread)
+                        {
+                            found = true;
+                            passres = passwordThread;
+                            countres = i;
+                            break;
+                        }
+                    }
+                    Console.WriteLine("End of [" + start + " - " + (start + 1000) + "]");
+                });
+
+                // adding thread in tab if empty or if is not alive
+                for (int i = 0; i < NUMBER_THREAD; i++)
+                {
+                    if (thread_tab[i] == null || !thread_tab[i].IsAlive)
+                    {
+                        thread_tab[i] = thread;
+                        THREAD_COUNT++;
+                        break;
+                    }
+                }
+                thread.Start();
+                count = count + 1000;
+                
             }
 
-            if(count >= 500)
+            //Waiting for threads to finish or the key to be found
+            while (!found && THREAD_COUNT != 0)
+            {
+                for (int i = 0; i < THREAD_COUNT; i++)
+                {
+                    if (thread_tab[i] != null && thread_tab[i].IsAlive)
+                    {
+                        thread_tab[i].Join();
+                        break;
+                    }
+                }
+            }
+
+
+            // Printing result
+            if (!found)
             {
                 Console.WriteLine("Key has not been found...\n");
-                Console.ReadLine();
-                Environment.Exit(1);
+                Environment.Exit(0);
             }
 
-            Console.WriteLine("Found : The password that has been used is : " + password + " \nFound after:" + count + " tries. \nHere are the data : " + draftdata);
-            Console.ReadLine();
+            // Stopping all threads
+            for (int i = 0; i < THREAD_COUNT; i++)
+            {
+                if (thread_tab[i] != null && thread_tab[i].IsAlive)
+                {
+                    thread_tab[i].Abort();
+                }
+            }
 
+            Console.WriteLine("Found : The password that has been used is : " + passres + " \nFound after:" + (countres) + " tries. \n" +
+                "You can now use the password to recover your files.");
+            
         }
 
         // Imported from the Hidden tear decrypt source code.
         public static string CreatePassword(int length, int seed)
         {
-            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890*!=&?&/";
             StringBuilder res = new StringBuilder();
             Random rnd = new Random(seed);
             while (0 < length--)
@@ -82,8 +148,6 @@ namespace HiddenTearConsole
         public static byte[] AES_Decrypt(byte[] bytesToBeDecrypted, byte[] passwordBytes)
         {
             byte[] decryptedBytes = null;
-            
-            byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
 
             using (MemoryStream ms = new MemoryStream())
             {
@@ -92,7 +156,7 @@ namespace HiddenTearConsole
 
                     AES.KeySize = 256;
                     AES.BlockSize = 128;
-
+                    
                     var key = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 1000);
                     AES.Key = key.GetBytes(AES.KeySize / 8);
                     AES.IV = key.GetBytes(AES.BlockSize / 8);

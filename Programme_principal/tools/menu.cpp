@@ -29,11 +29,12 @@ void printChoiceMenu(){
 	printf("Please choose an option (enter 1 or 2) :\n");
 	printf(" 1 - Analyze Disk\n");
 	printf(" 2 - Analyze Pcap file\n");
-	printf(" 3 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.)\n", cipheredFileName.c_str());
+	printf(" 3 - Try to bruteforce HiddenTear (Requires a plain/ciphered pair)\n");
+	printf(" 4 - Recover files from a previous analysis (Supposes that you have already analyzed the disk and the file %s has been created.)\n", cipheredFileName.c_str());
 }
 
 short getUserChoice(){
-	short choice;
+	int choice;
 	cin >> choice;
 	if(cin.fail()){
 		cin.clear();
@@ -44,11 +45,12 @@ short getUserChoice(){
 
 string askUserForPath(){
 	bool isPathADir = false;
-	string path = "";
+	string path;
+	getline(cin,path);
 	do{
 		printf("\n Please enter a specific path (to a directory) to consider (Enter C:/ to analyze the whole disk) :\n");
 		cin.clear();
-		cin >> path;
+		getline(cin,path);
 		isPathADir = isADirectory(path);
 	} while (!isPathADir);
 	return path;
@@ -56,11 +58,12 @@ string askUserForPath(){
 
 string askUserForFilePath(string text){
 	bool isPathAFile = false;
-	string path = "";
+	string path;
+	fflush(stdin);
 	do{
 		printf(text.c_str());
+		getline(cin,path);
 		cin.clear();
-		cin >> path;
 		isPathAFile = isAFile(path);
 	} while (!isPathAFile);
 	return path;

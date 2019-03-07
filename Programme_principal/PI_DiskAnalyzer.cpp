@@ -111,15 +111,43 @@ void recover_files(short id_tool_selected){
 		string file_path = line.substr(line.find(delimiter)+1, line.size());
 
 		// Vipasana file, need the Vipasana Recovery Tool
-		if(!ransomware_name.compare("Vipasana")){
+		if(!ransomware_name.compare("Vipasana") && !string("Vipasana").compare(recovery_tools[id_tool_selected])){
 			vipasanaRecover->decipher(file_path);
 		}
-		if(!ransomware_name.compare("HiddenTear")){
+		if(!ransomware_name.compare("HiddenTear") && !string("HiddenTearPassword").compare(recovery_tools[id_tool_selected])){
 			hiddenTearRecoverer->decipher(file_path);
 		}
 	}
 	file.close();
 }
+
+
+void bruteforce_hiddentear(){
+	string plainpath = "";
+	string cipheredpath = "";
+	printf("You have chosen HiddenTear Bruteforceing tool..\n");
+
+	plainpath = askUserForFilePath(string("Please enter the path of the plaintext file :\n"));
+	cipheredpath = askUserForFilePath(string("Now, please enter the path of the cipheredtext file :\n"));
+	int seconds = -1;
+	do {
+		printf("Then, Enter the number of seconds of the range to bruteforce. (10 will bruteforce from 0 to 10000 hidden-tear password seed)\n");
+		seconds = getUserChoice();
+
+	} while( seconds < 1);
+	int threads = -1;
+	do {
+		printf("Finally, Enter the number of threads you want to run. (1 thread processes a range of 1000 tries)\n");
+		threads = getUserChoice();
+
+	} while( threads < 1);
+
+	HiddenTearRecoverer *hiddenTearRecoverer;
+	hiddenTearRecoverer = new HiddenTearRecoverer(plainpath, cipheredpath, seconds, threads);
+	hiddenTearRecoverer->bruteforce();
+}
+
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -127,13 +155,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	recovery_tools.push_back("Vipasana");
 	recovery_tools.push_back("HiddenTearPassword");
 
-	short userChoice = 0;
+	int userChoice = 0;
 	printFirstMenu();
 	do{
 		printChoiceMenu();
 		userChoice = getUserChoice();
 
-	} while(userChoice != 1 && userChoice != 2 && userChoice != 3) ;
+	} while(userChoice < 1 || userChoice > 4) ;
 
 	string path("");
 	switch(userChoice){
@@ -149,6 +177,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			pcap_parse_file(path);
 			break;
 		case 3:
+			bruteforce_hiddentear();
+			break;
+		case 4:
 			// Opening the C:/ciphered_files_list.txt and try to recover files according to the attached ransomware's name.
 			short selected_id = askUserForRecoveryTool();
 			recover_files(selected_id);
