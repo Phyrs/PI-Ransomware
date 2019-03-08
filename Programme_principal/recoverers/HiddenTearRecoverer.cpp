@@ -6,8 +6,8 @@
 
 using namespace std;
 
-const char *HiddenTearRecoverer::EXE_PATH = "\"C:\\Documents and Settings\\Administrateur\\Bureau\\librairies\\HiddenTearNetworkAtk.exe\"";
-const char *HiddenTearRecoverer::EXE_PATH2 = "\"C:\\Documents and Settings\\Administrateur\\Bureau\\librairies\\HiddenTearBruteforce.exe\"";
+const char *HiddenTearRecoverer::EXE_PATH = "C:\\Documents and Settings\\Administrateur\\Bureau\\librairies\\hidden_tear\\HiddenTearNetworkAtk.exe";
+const char *HiddenTearRecoverer::EXE_PATH2 = "C:\\Documents and Settings\\Administrateur\\Bureau\\librairies\\hidden_tear\\HiddenTearBruteforce.exe";
 
 HiddenTearRecoverer::HiddenTearRecoverer(string pass)
 {
@@ -24,7 +24,9 @@ HiddenTearRecoverer::HiddenTearRecoverer(string pl, string ciph, int sec, int t)
 
 void HiddenTearRecoverer::decipher(string path) const
 {
-	string cmd(EXE_PATH);
+	string cmd("\"");
+	cmd.append(EXE_PATH);
+	cmd.append("\"");
 	cmd.append(" ");
 	cmd.append(password);
 	cmd.append(" \"");
@@ -76,7 +78,9 @@ void HiddenTearRecoverer::decipher(string path) const
 
 void HiddenTearRecoverer::bruteforce()
 {
-	string cmd(EXE_PATH2);
+	string cmd("\"");
+	cmd.append(EXE_PATH2);
+	cmd.append("\"");
 	cmd.append(" \"");
 	cmd.append(plain);
 	cmd.append("\" \"");

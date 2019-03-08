@@ -264,7 +264,7 @@ Matrice Matrice::transposee() const
 
 
 Matrice Matrice::inverser(Matrice const &iY) const
-{cout << tx << endl;
+{//cout << tx << endl;
     int const n = tx;
     int const m = ty;
 
@@ -314,7 +314,7 @@ if (j==m) cout << i << "pose probleme" << endl;
         if (i%400 == 0) cout << "Inversion : " << 100.0*i/n << "%" << endl;
     }
 
-    cout << "bits non trouves :" << endl;
+    //cout << "bits non trouves :" << endl;
 
     int bitsNuls = 0;
     int bitsNonTrouves = 0;
@@ -332,7 +332,7 @@ if (j==m) cout << i << "pose probleme" << endl;
     {
         if (matrice.get(i, i) == 0)
         {
-            cout << i << " ";
+            //cout << i << " ";
             isBitInconnu[i] = 1;
             bitsNuls++;
         }
@@ -371,7 +371,7 @@ if (j==m) cout << i << "pose probleme" << endl;
 	delete[] isBitNonTrouve;
 	delete[] isBitInconnu;
 
-    cout << "erreur " << bitsNuls << " " << bitsNonTrouves << " " << nbProblemes << endl;
+    //cout << "erreur " << bitsNuls << " " << bitsNonTrouves << " " << nbProblemes << endl;
     return X;
 }
 

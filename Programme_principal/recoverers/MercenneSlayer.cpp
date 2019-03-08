@@ -199,7 +199,7 @@ void MercenneSlayer::sEtatSCrypy(uint8_t iNombresAleatoires[])
 
     Matrice nombresAleatoires(iNombresAleatoires, n*w);//(1, n*w);
     
-    cout << nombresAleatoires.hexa() << endl;
+    //cout << nombresAleatoires.hexa() << endl;
 /*
     for (short i=0; i<nbFichiers; i++)
     {
@@ -216,7 +216,7 @@ void MercenneSlayer::sEtatSCrypy(uint8_t iNombresAleatoires[])
         if (nbBitsRestants > nbBitsNom) nombresAleatoires.coller(Matrice(iNombresAleatoires+nbFichiers*tailleCycle+tailleNom, nbBitsEtatNom), 0, nbFichiers*nbBitsCycle+nbBitsEtatNom, 1, n*w);
     }
 */
-    cout << nombresAleatoires.hexa() << endl;
+    //cout << nombresAleatoires.hexa() << endl;
 
     //On ajoute des contraintes
     int const finReferences = 623*32;
@@ -248,7 +248,7 @@ void MercenneSlayer::sEtatSCrypy(uint8_t iNombresAleatoires[])
 
     Matrice iEtats = (contraintes*matriceCrypyContrainte.inverser(nombresAleatoires)).transposee();
 
-    cout << iEtats.hexa() << endl;
+    //cout << iEtats.hexa() << endl;
 
     for (short i=0; i<n*4; i+=4) etats[i/4] = (iEtats.get8(i, 0) << 24) | (iEtats.get8(i+1, 0) << 16) | (iEtats.get8(i+2, 0) << 8) | iEtats.get8(i+3, 0);
     

@@ -96,7 +96,7 @@ CrypyRecover::CrypyRecover(string pathRacine)
     keys = new string[nbFichiers];
     for (int i=0; i<nbFichiers; i++) keys[i] = generateKey();
 
-    cout << keys[0] << " " << keys[1] << " " << keys[2] << endl;
+    //cout << keys[0] << " " << keys[1] << " " << keys[2] << endl;
 
 	delete[] nombresAleatoires;
 }
@@ -191,13 +191,13 @@ void CrypyRecover::decipher(string path) const
     fichier.read(iDonnees, 65536);
     int nbDonnees = fichier.gcount();
 
+	CryptoPP::CBC_Mode<CryptoPP::AES >::Decryption d;
+    d.SetKeyWithIV( iKey, 32, iv, 16);
+
     while(nbDonnees > 0)
     {
         byte donnees[65537];
         for (long i=0; i<nbDonnees; i++) donnees[i] = static_cast<uint8_t>(iDonnees[i]);
-
-        CryptoPP::CBC_Mode<CryptoPP::AES >::Decryption d;
-        d.SetKeyWithIV( iKey, 32, iv, 16);
 
         d.ProcessData(donnees, donnees, nbDonnees);
 

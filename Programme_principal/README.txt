@@ -31,7 +31,7 @@ cryptopp : 1) Ouvrir cryptest.sln avec Visual Studio
 		- Dans "Propriétés communes", ajouter une nouvelle référence et choisir cryptlib.
 		- Dans C/C++ -> Génération de COde -> Passer "Bibliothèque RunTime à MultiThread \MT
 
-
+A côté de l'exécutable doivent se trouver : un dossier matrices contenant la matrice mersennetwister, un fichier extension.json correspondant aux extensions à retrouver.
 
 
 *********************************

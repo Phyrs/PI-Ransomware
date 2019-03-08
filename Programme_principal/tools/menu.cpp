@@ -26,7 +26,7 @@ void printFirstMenu(){
 }
 
 void printChoiceMenu(){
-	printf("Please choose an option (enter 1 or 2) :\n");
+	printf("Please choose an option (enter 1-4) :\n");
 	printf(" 1 - Analyze Disk\n");
 	printf(" 2 - Analyze Pcap file\n");
 	printf(" 3 - Try to bruteforce HiddenTear (Requires a plain/ciphered pair)\n");
